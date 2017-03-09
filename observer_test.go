@@ -1,6 +1,7 @@
 package govuegui
 
 import (
+	"fmt"
 	"testing"
 	"time"
 )
@@ -12,10 +13,8 @@ func TestObserver(t *testing.T) {
 	o.RefreshTime = time.Millisecond
 	o.AddString("myString", &myString)
 	o.Start()
-	o.Subscribe(func(event, key, oldval string) {
-		testString = oldval
-		//fmt.Println(event, key, oldval)
-	})
+	notification := make(chan stringValue)
+	o.Subscribe(notification)
 	tests := []struct {
 		value  string
 		expect string
@@ -24,7 +23,17 @@ func TestObserver(t *testing.T) {
 		{"AnotherNewValue", "NewValue"},
 	}
 	for _, test := range tests {
+		time.Sleep(time.Millisecond * 1100)
 		myString = test.value
+
+		select {
+		case n := <-notification:
+
+			fmt.Printf("%v", n)
+			testString = n.value
+
+		}
+
 		// Test needs to wait becuase the observer needs some time
 		time.Sleep(time.Millisecond * 300)
 		if testString != test.expect {

@@ -25,13 +25,13 @@ type Observer struct {
 	stop        chan int
 	mutex       sync.Mutex
 	strings     []*stringValue
-	subscribers []EventFunc
+	subscribers []chan stringValue
 	RefreshTime time.Duration
 }
 
 // EventFunc is used to define a function which is called
 // when a value changes
-type EventFunc func(event, key, oldval string)
+type EventFunc func(event string, sv chan stringValue)
 
 // NewObserver creates a empty Observer
 func NewObserver() *Observer {
@@ -51,7 +51,7 @@ func (o *Observer) Start() {
 					for _, sval := range o.strings {
 						if *sval.pointer != sval.value {
 							o.mutex.Lock()
-							o.emmit(ObserverValueChanged, sval.key, sval.value)
+							o.emmit(ObserverValueChanged, *sval)
 
 							sval.value = *sval.pointer
 							o.mutex.Unlock()
@@ -65,9 +65,9 @@ func (o *Observer) Start() {
 	}
 }
 
-func (o *Observer) emmit(event, key, oldval string) {
+func (o *Observer) emmit(event string, sv stringValue) {
 	for _, f := range o.subscribers {
-		f(event, key, oldval)
+		f <- sv
 	}
 }
 
@@ -78,8 +78,8 @@ func (o *Observer) Stop() {
 
 // Subscribe a func type EventFunc to the observer. All subscribed
 // functions are called, when a event happens
-func (o *Observer) Subscribe(ef EventFunc) {
-	o.subscribers = append(o.subscribers, ef)
+func (o *Observer) Subscribe(svc chan stringValue) {
+	o.subscribers = append(o.subscribers, svc)
 }
 
 // AddString to the observer. The key is used to identify that
