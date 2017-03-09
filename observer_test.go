@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-func TestAddString(t *testing.T) {
-
-}
-
 func TestObserver(t *testing.T) {
 	myString := "OldValue"
 	testString := "-"

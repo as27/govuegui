@@ -1,6 +1,7 @@
 package govuegui
 
 import (
+	"sync"
 	"time"
 )
 
@@ -20,7 +21,9 @@ type stringValue struct {
 
 // Observer watches variables if they change
 type Observer struct {
+	runs        bool
 	stop        chan int
+	mutex       sync.Mutex
 	strings     []*stringValue
 	subscribers []EventFunc
 	RefreshTime time.Duration
@@ -40,21 +43,26 @@ func NewObserver() *Observer {
 
 // Start to begin watching the varaibles
 func (o *Observer) Start() {
-	go func() {
-		for {
-			select {
-			case <-time.Tick(time.Millisecond * 100):
-				for _, sval := range o.strings {
-					if *sval.pointer != sval.value {
-						o.emmit(ObserverValueChanged, sval.key, sval.value)
-						sval.value = *sval.pointer
+	if !o.runs {
+		go func() {
+			for {
+				select {
+				case <-time.Tick(time.Millisecond * 100):
+					for _, sval := range o.strings {
+						if *sval.pointer != sval.value {
+							o.mutex.Lock()
+							o.emmit(ObserverValueChanged, sval.key, sval.value)
+
+							sval.value = *sval.pointer
+							o.mutex.Unlock()
+						}
 					}
+				case <-o.stop:
+					return
 				}
-			case <-o.stop:
-				return
 			}
-		}
-	}()
+		}()
+	}
 }
 
 func (o *Observer) emmit(event, key, oldval string) {
