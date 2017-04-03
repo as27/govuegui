@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -30,6 +30,11 @@ var testCases = []struct {
 		FLOAT64,
 		float64(1.1234),
 	},
+	{
+		"sliceOfStrings",
+		STRINGSLICE,
+		[]string{"abc", "def", "hij"},
+	},
 }
 
 func TestSet(t *testing.T) {
@@ -52,8 +57,7 @@ func TestGet(t *testing.T) {
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		val, _ := data.Get(tc.key)
-		fmt.Printf("%T", val)
-		if val != tc.value {
+		if !reflect.DeepEqual(val, tc.value) {
 			t.Errorf("Get() wrong value\nInput: %s\nGot: %v Exp: %v",
 				tc.key,
 				val,

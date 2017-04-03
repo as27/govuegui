@@ -1,11 +1,19 @@
 // Package govuegui provides a simple gui, which can be used via a
-// http server inside the browser.
+// http server inside the browser. There are three different abstractions
+// to build the gui. Every level gets a identifier as a string.
 //
-//   Form("abc").Box("cde").String("name").Input("myvalue")
-//   Form("abc").Box("cde").Int("name").Value(123)
+// First level is the Form. Every Form has one submit button.
+//
+// Inside a form every element is grouped into a Box. Each Form can
+// hold as many Boxes as wanted.
+//
+// The api let's you define everything on a very simple way:
 //   Form("abc").Box("cde").Input("name").Value("myvalue")
+//   Form("abc").Box("cde").Input("name").BindString(myString)
 //   Form("abc").Box("cde").Textarea("name2").Value("myvalue")
-//   Form("abc").Box("cde").Select("name2").Option("myvalue")
+//   Form("abc").Box("cde").Select("name2").Option("val1", "Value1")
+//   Form("abc").Box("cde").Select("name2").Option("val2", "Value2")
+//   Form("abc").Box("cde").Select("name2").Option("val3", "Value3")
 //   Form("abc").Box("cde").Each(func(){})
 package govuegui
 
@@ -19,13 +27,8 @@ const (
 	SELECT
 )
 
-// Option for an element is represented by a function, which takes
-// strings as input. For example Class() could be a function where
-// css classes can added to a element.
-// Class("active","box")
-type OptionFunc func(vals ...string) error
-
-type Option struct {
+// option holds the one option of a element
+type option struct {
 	Option string
 	Values []string
 }
@@ -34,7 +37,7 @@ type Option struct {
 type Element struct {
 	id        string
 	inputType ElementType
-	Options   []*Option
+	options   []*option
 }
 
 func NewElement(id string, inputType ElementType) *Element {
@@ -44,23 +47,23 @@ func NewElement(id string, inputType ElementType) *Element {
 	}
 }
 
-func (e *Element) Option(option string, values ...string) {
-	o := e.GetOption(option)
+func (e *Element) Option(opt string, values ...string) {
+	o := e.getOption(opt)
 	if o != nil {
 		o.Values = values
 	} else {
-		newOption := Option{
-			Option: option,
+		newOption := option{
+			Option: opt,
 			Values: values,
 		}
-		e.Options = append(e.Options, &newOption)
+		e.options = append(e.options, &newOption)
 	}
 
 }
 
-func (e *Element) GetOption(option string) *Option {
-	for _, o := range e.Options {
-		if o.Option == option {
+func (e *Element) getOption(opt string) *option {
+	for _, o := range e.options {
+		if o.Option == opt {
 			return o
 		}
 	}

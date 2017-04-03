@@ -52,7 +52,7 @@ func TestElements(t *testing.T) {
 	inputElement.Option("class", "form")
 	inputElement.Option("title", "myElement")
 	inputElement.Option("class", "active", "form")
-	o := inputElement.GetOption("class")
+	o := inputElement.getOption("class")
 	if o == nil {
 		t.Fatal("Option `class` not found!")
 	}
