@@ -1,4 +1,4 @@
-package govuegui
+package observer
 
 import (
 	"sync"

@@ -1,17 +1,70 @@
+// Package govuegui provides a simple gui, which can be used via a
+// http server inside the browser.
+//
+//   Form("abc").Box("cde").String("name").Input("myvalue")
+//   Form("abc").Box("cde").Int("name").Value(123)
+//   Form("abc").Box("cde").Input("name").Value("myvalue")
+//   Form("abc").Box("cde").Textarea("name2").Value("myvalue")
+//   Form("abc").Box("cde").Select("name2").Option("myvalue")
+//   Form("abc").Box("cde").Each(func(){})
 package govuegui
+
+// ElementType defines the
+type ElementType int
+
+// Defining the allowed ElementTypes
+const (
+	INPUT ElementType = iota
+	TEXTAREA
+	SELECT
+)
 
 // Option for an element is represented by a function, which takes
 // strings as input. For example Class() could be a function where
 // css classes can added to a element.
 // Class("active","box")
-type Option func(vals ...string)
+type OptionFunc func(vals ...string) error
+
+type Option struct {
+	Option string
+	Values []string
+}
 
 // Element represents a simple html element
 type Element struct {
-	id      string
-	Key     string
-	Name    string
-	Options []Option
+	id        string
+	inputType ElementType
+	Options   []*Option
+}
+
+func NewElement(id string, inputType ElementType) *Element {
+	return &Element{
+		id:        id,
+		inputType: inputType,
+	}
+}
+
+func (e *Element) Option(option string, values ...string) {
+	o := e.GetOption(option)
+	if o != nil {
+		o.Values = values
+	} else {
+		newOption := Option{
+			Option: option,
+			Values: values,
+		}
+		e.Options = append(e.Options, &newOption)
+	}
+
+}
+
+func (e *Element) GetOption(option string) *Option {
+	for _, o := range e.Options {
+		if o.Option == option {
+			return o
+		}
+	}
+	return nil
 }
 
 // Box is the way elements are grouped. Every Element
@@ -23,6 +76,14 @@ type Box struct {
 // ID returns the id of the box
 func (b *Box) ID() string {
 	return b.id
+}
+
+func (b *Box) Input(id string) *Element {
+	return NewElement(id, INPUT)
+}
+
+func (b *Box) Textarea(id string) *Element {
+	return NewElement(id, TEXTAREA)
 }
 
 // Form wrapps one ore more Boxes
@@ -80,7 +141,3 @@ func (g *Gui) Form(id string) *Form {
 	}
 	return form
 }
-
-// Form("abc").Box("cde").Input("name","Name").Value("myvalue")
-// Form("abc").Box("cde").Textarea("name2","Name").Value("myvalue")
-// Form("abc").Box("cde").Select("name2","Name").Option("myvalue")
