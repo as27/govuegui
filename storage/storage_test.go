@@ -5,6 +5,8 @@ import (
 	"testing"
 )
 
+var str = "myString"
+var myint = 123456
 var testCases = []struct {
 	key   string
 	dType dataType
@@ -34,6 +36,16 @@ var testCases = []struct {
 		"sliceOfStrings",
 		STRINGSLICE,
 		[]string{"abc", "def", "hij"},
+	},
+	{
+		"string pointer",
+		STRINGPOINTER,
+		&str,
+	},
+	{
+		"pointer to int",
+		INTPOINTER,
+		&myint,
 	},
 }
 
