@@ -1,6 +1,8 @@
 package govuegui
 
 import (
+	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/as27/golib/js/vuejsdev"
@@ -23,6 +25,7 @@ var ServerPort = ":2700"
 func NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc(PathPrefix+"/vue.min.js", vuejsdev.Handler)
+	r.HandleFunc(PathPrefix+"/app.js", appHandler)
 	return r
 }
 
@@ -31,4 +34,14 @@ func NewRouter() *mux.Router {
 func Serve() error {
 	r := NewRouter()
 	return http.ListenAndServe(ServerPort, r)
+}
+
+func appHandler(w http.ResponseWriter, r *http.Request) {
+	b, err := ioutil.ReadFile("app.js")
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(404)
+		return
+	}
+	w.Write(b)
 }
