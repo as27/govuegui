@@ -1,7 +1,9 @@
 package govuegui
 
-import "testing"
-import "reflect"
+import (
+	"reflect"
+	"testing"
+)
 
 func TestGuiForm(t *testing.T) {
 	gui := NewGui()
@@ -67,5 +69,21 @@ func TestElements(t *testing.T) {
 	textareaElement := box.Textarea("textid")
 	if textareaElement.inputType != TEXTAREA {
 		t.Error("Wrong ElementType!")
+	}
+}
+
+func TestSetGet(t *testing.T) {
+	gui := NewGui()
+	testString := "Value of a string"
+	err := gui.Form("myForm").Box("Box1").Textarea("t1").Set(testString)
+	if err != nil {
+		t.Error(err)
+	}
+	got := gui.Form("myForm").Box("Box1").Textarea("t1").Get()
+	if !reflect.DeepEqual(got, testString) {
+		t.Errorf("Another value expected.\nGot: %s\nExp: %s",
+			got,
+			testString,
+		)
 	}
 }

@@ -17,6 +17,8 @@
 //   Form("abc").Box("cde").Each(func(){})
 package govuegui
 
+import "github.com/as27/govuegui/storage"
+
 // ElementType defines the
 type ElementType int
 
@@ -36,13 +38,15 @@ type option struct {
 // Element represents a simple html element
 type Element struct {
 	id        string
+	gui       *Gui
 	inputType ElementType
 	options   []*option
 }
 
-func NewElement(id string, inputType ElementType) *Element {
+func NewElement(id string, gui *Gui, inputType ElementType) *Element {
 	return &Element{
 		id:        id,
+		gui:       gui,
 		inputType: inputType,
 	}
 }
@@ -70,9 +74,18 @@ func (e *Element) getOption(opt string) *option {
 	return nil
 }
 
+func (e *Element) Set(i interface{}) error {
+	return e.gui.Data.Set(e.id, i)
+}
+
+func (e *Element) Get() interface{} {
+	return e.gui.Data.Get(e.id)
+}
+
 // Box is the way elements are grouped. Every Element
 type Box struct {
 	id       string
+	gui      *Gui
 	Elements []*Element
 }
 
@@ -82,16 +95,17 @@ func (b *Box) ID() string {
 }
 
 func (b *Box) Input(id string) *Element {
-	return NewElement(id, INPUT)
+	return NewElement(id, b.gui, INPUT)
 }
 
 func (b *Box) Textarea(id string) *Element {
-	return NewElement(id, TEXTAREA)
+	return NewElement(id, b.gui, TEXTAREA)
 }
 
 // Form wrapps one ore more Boxes
 type Form struct {
 	id    string
+	gui   *Gui
 	Boxes []*Box
 }
 
@@ -111,7 +125,10 @@ func (f *Form) Box(id string) *Box {
 		}
 	}
 	if box == nil {
-		box = &Box{id: id}
+		box = &Box{
+			id:  id,
+			gui: f.gui,
+		}
 		f.Boxes = append(f.Boxes, box)
 	}
 	return box
@@ -120,11 +137,14 @@ func (f *Form) Box(id string) *Box {
 // Gui groups different forms together.
 type Gui struct {
 	Forms []*Form
+	Data  *storage.Data
 }
 
 // NewGui returns a pointer to a new instance of a gui
 func NewGui() *Gui {
-	return &Gui{}
+	return &Gui{
+		Data: storage.New(),
+	}
 }
 
 // Form returns the pointer to a form. If the id exists the existing
@@ -139,7 +159,10 @@ func (g *Gui) Form(id string) *Form {
 		}
 	}
 	if form == nil {
-		form = &Form{id: id}
+		form = &Form{
+			id:  id,
+			gui: g,
+		}
 		g.Forms = append(g.Forms, form)
 	}
 	return form
