@@ -7,6 +7,8 @@
 // Inside a form every element is grouped into a Box. Each Form can
 // hold as many Boxes as wanted.
 //
+//
+//
 // The api let's you define everything on a very simple way:
 //   Form("abc").Box("cde").Input("name").Value("myvalue")
 //   Form("abc").Box("cde").Input("name").BindString(myString)
@@ -17,10 +19,13 @@
 //   Form("abc").Box("cde").Each(func(){})
 package govuegui
 
-import "github.com/as27/govuegui/storage"
-
 // ElementType defines the
 type ElementType int
+
+type dataStorage interface {
+	Get(string) interface{}
+	Set(string, interface{}) error
+}
 
 // Defining the allowed ElementTypes
 const (
@@ -30,7 +35,7 @@ const (
 )
 
 // option holds the one option of a element
-type option struct {
+type Option struct {
 	Option string
 	Values []string
 }
@@ -40,7 +45,7 @@ type Element struct {
 	id        string
 	gui       *Gui
 	inputType ElementType
-	options   []*option
+	options   []*Option
 }
 
 func NewElement(id string, gui *Gui, inputType ElementType) *Element {
@@ -56,7 +61,7 @@ func (e *Element) Option(opt string, values ...string) {
 	if o != nil {
 		o.Values = values
 	} else {
-		newOption := option{
+		newOption := Option{
 			Option: opt,
 			Values: values,
 		}
@@ -65,7 +70,7 @@ func (e *Element) Option(opt string, values ...string) {
 
 }
 
-func (e *Element) getOption(opt string) *option {
+func (e *Element) getOption(opt string) *Option {
 	for _, o := range e.options {
 		if o.Option == opt {
 			return o
@@ -137,13 +142,13 @@ func (f *Form) Box(id string) *Box {
 // Gui groups different forms together.
 type Gui struct {
 	Forms []*Form
-	Data  *storage.Data
+	Data  dataStorage
 }
 
 // NewGui returns a pointer to a new instance of a gui
-func NewGui() *Gui {
+func NewGui(ds dataStorage) *Gui {
 	return &Gui{
-		Data: storage.New(),
+		Data: ds,
 	}
 }
 

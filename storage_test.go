@@ -1,4 +1,4 @@
-package storage
+package govuegui
 
 import (
 	"encoding/json"
@@ -48,6 +48,20 @@ var testCases = []struct {
 		"pointer to int",
 		INTPOINTER,
 		&myint,
+	},
+	{
+		"element options",
+		OPTION,
+		[]Option{
+			Option{
+				"class",
+				[]string{"active", "blue"},
+			},
+			Option{
+				"title",
+				[]string{"myTitle"},
+			},
+		},
 	},
 }
 

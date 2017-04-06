@@ -1,11 +1,4 @@
-// Package storage can store different types by using a simple
-// api. Just using Get() and Set() and Remove()
-//    store := storage.New()
-//    store.Set("MyString","This is my string")
-//    store.Set("MyInt", 1234)
-//    // Set type when use Get()
-//    i := store.Get("MyInt").(int)
-package storage
+package govuegui
 
 import (
 	"encoding/json"
@@ -21,6 +14,7 @@ const (
 	INT
 	INTPOINTER
 	FLOAT64
+	OPTION
 )
 
 // ErrTypeNotSupported is returned by Set() when the given type could
@@ -40,6 +34,7 @@ type Data struct {
 	Ints         map[string]int      `json:"ints"`
 	PInts        map[string]*int     `json:"pints"`
 	Floats64     map[string]float64  `json:"floats64"`
+	Options      map[string][]Option `json:"options"`
 }
 
 // New returns a pointer to a new empty storage
@@ -52,6 +47,7 @@ func New() *Data {
 		Ints:         make(map[string]int),
 		PInts:        make(map[string]*int),
 		Floats64:     make(map[string]float64),
+		Options:      make(map[string][]Option),
 	}
 }
 
@@ -76,6 +72,9 @@ func (d *Data) Set(key string, i interface{}) error {
 	case float64:
 		d.Values[key] = FLOAT64
 		d.Floats64[key] = i
+	case []Option:
+		d.Values[key] = OPTION
+		d.Options[key] = i
 	default:
 		return ErrTypeNotSupported
 	}
@@ -115,6 +114,8 @@ func (d *Data) GetWithErrors(key string) (interface{}, error) {
 		return d.PInts[key], nil
 	case FLOAT64:
 		return d.Floats64[key], nil
+	case OPTION:
+		return d.Options[key], nil
 	}
 	return nil, nil
 }
@@ -141,6 +142,8 @@ func (d *Data) Remove(key string) bool {
 		delete(d.PInts, key)
 	case FLOAT64:
 		delete(d.Floats64, key)
+	case OPTION:
+		delete(d.Options, key)
 	default:
 		return false
 	}

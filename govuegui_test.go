@@ -5,8 +5,21 @@ import (
 	"testing"
 )
 
+type mockStorage struct {
+	i interface{}
+}
+
+func (s *mockStorage) Set(k string, i interface{}) error {
+	s.i = i
+	return nil
+}
+
+func (s *mockStorage) Get(k string) interface{} {
+	return s.i
+}
+
 func TestGuiForm(t *testing.T) {
-	gui := NewGui()
+	gui := NewGui(&mockStorage{})
 	testCases := []struct {
 		formid  string
 		boxesid []string
@@ -73,7 +86,7 @@ func TestElements(t *testing.T) {
 }
 
 func TestSetGet(t *testing.T) {
-	gui := NewGui()
+	gui := NewGui(&mockStorage{})
 	testString := "Value of a string"
 	err := gui.Form("myForm").Box("Box1").Textarea("t1").Set(testString)
 	if err != nil {
