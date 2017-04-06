@@ -27,18 +27,18 @@ var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 // Data is the type were everything is stored and which can be used for
 // Marshaling to json.
 type Data struct {
-	Values       map[string]dataType `json:"values"`
-	Strings      map[string]string   `json:"strings"`
-	PStrings     map[string]*string  `json:"pstrings"`
-	StringSlices map[string][]string `json:"stringSlices"`
-	Ints         map[string]int      `json:"ints"`
-	PInts        map[string]*int     `json:"pints"`
-	Floats64     map[string]float64  `json:"floats64"`
-	Options      map[string][]Option `json:"options"`
+	Values       map[string]dataType  `json:"values"`
+	Strings      map[string]string    `json:"strings"`
+	PStrings     map[string]*string   `json:"pstrings"`
+	StringSlices map[string][]string  `json:"stringSlices"`
+	Ints         map[string]int       `json:"ints"`
+	PInts        map[string]*int      `json:"pints"`
+	Floats64     map[string]float64   `json:"floats64"`
+	Options      map[string][]*Option `json:"options"`
 }
 
-// New returns a pointer to a new empty storage
-func New() *Data {
+// NewStorage returns a pointer to a new empty storage
+func NewStorage() *Data {
 	return &Data{
 		Values:       make(map[string]dataType),
 		Strings:      make(map[string]string),
@@ -47,7 +47,7 @@ func New() *Data {
 		Ints:         make(map[string]int),
 		PInts:        make(map[string]*int),
 		Floats64:     make(map[string]float64),
-		Options:      make(map[string][]Option),
+		Options:      make(map[string][]*Option),
 	}
 }
 
@@ -72,7 +72,7 @@ func (d *Data) Set(key string, i interface{}) error {
 	case float64:
 		d.Values[key] = FLOAT64
 		d.Floats64[key] = i
-	case []Option:
+	case []*Option:
 		d.Values[key] = OPTION
 		d.Options[key] = i
 	default:
@@ -157,7 +157,7 @@ func (d *Data) Marshal() ([]byte, error) {
 
 // Unmarshal a slice of bytes into the data
 func Unmarshal(b []byte) (*Data, error) {
-	data := New()
+	data := NewStorage()
 	err := json.Unmarshal(b, data)
 	return data, err
 }

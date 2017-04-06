@@ -52,12 +52,12 @@ var testCases = []struct {
 	{
 		"element options",
 		OPTION,
-		[]Option{
-			Option{
+		[]*Option{
+			&Option{
 				"class",
 				[]string{"active", "blue"},
 			},
-			Option{
+			&Option{
 				"title",
 				[]string{"myTitle"},
 			},
@@ -66,7 +66,7 @@ var testCases = []struct {
 }
 
 func ExampleData_Set() {
-	store := New()
+	store := NewStorage()
 	store.Set("myString", "this is my string")
 	store.Set("myInt", 1234)
 	i := store.Get("myInt").(int)
@@ -74,7 +74,7 @@ func ExampleData_Set() {
 	// Output: 2468
 }
 func TestSet(t *testing.T) {
-	data := New()
+	data := NewStorage()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		if data.Values[tc.key] != tc.dType {
@@ -89,7 +89,7 @@ func TestSet(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	data := New()
+	data := NewStorage()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		val := data.Get(tc.key)
@@ -104,7 +104,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestErrors(t *testing.T) {
-	data := New()
+	data := NewStorage()
 	type notSupported int
 	a := notSupported(123)
 	err := data.Set("notSupported", a)
@@ -122,7 +122,7 @@ func TestErrors(t *testing.T) {
 }
 
 func TestMarshal(t *testing.T) {
-	data := New()
+	data := NewStorage()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 	}
@@ -131,7 +131,7 @@ func TestMarshal(t *testing.T) {
 		//t.Error("Can not Marshal the data")
 		t.Error(err)
 	}
-	d := New()
+	d := NewStorage()
 	err = json.Unmarshal(b, d)
 	if err != nil {
 		t.Error(err)
@@ -139,7 +139,7 @@ func TestMarshal(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	data := New()
+	data := NewStorage()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		val, err := data.GetWithErrors(tc.key)
