@@ -11,3 +11,9 @@ That the changes takes effect to the package, after every change inside of the h
 rice embed-go
 ```
 
+# Used projects
+
+This package includes following great project:
+
+* [Pure.css](https://purecss.io/)
+* [Gorillatoolkit](http://www.gorillatoolkit.org/)

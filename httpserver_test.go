@@ -6,23 +6,28 @@ import (
 	"testing"
 )
 
-func TestRouter(t *testing.T) {
+func TestRouterWithRice(t *testing.T) {
+	useRice = true
+	routerTest(t)
+	useRice = false
+	routerTest(t)
+}
 
+func routerTest(t *testing.T) {
 	ts := httptest.NewServer(NewRouter())
 	defer ts.Close()
-	res, err := http.Get(ts.URL + PathPrefix + "/vue.min.js")
-	if err != nil {
-		t.Error(err)
+	testUrls := []string{
+		"lib/vue.min.js",
+		"lib/pure.min.css",
+		"lib/app.js",
 	}
-	if res.StatusCode != 200 {
-		t.Error("Did not find vue library")
+	for _, tURL := range testUrls {
+		res, err := http.Get(ts.URL + PathPrefix + "/" + tURL)
+		if err != nil {
+			t.Error(err)
+		}
+		if res.StatusCode != 200 {
+			t.Errorf("Did not find %s", tURL)
+		}
 	}
-	res, err = http.Get(ts.URL + PathPrefix + "/app.js")
-	if err != nil {
-		t.Error(err)
-	}
-	if res.StatusCode != 200 {
-		t.Error("Did not find app.js")
-	}
-
 }

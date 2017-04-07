@@ -35,6 +35,40 @@ type Option struct {
 	Values []string
 }
 
+// Gui groups different forms together.
+type Gui struct {
+	Forms []*Form
+	Data  *Data
+}
+
+// NewGui returns a pointer to a new instance of a gui
+func NewGui() *Gui {
+	return &Gui{
+		Data: NewStorage(),
+	}
+}
+
+// Form returns the pointer to a form. If the id exists the existing
+// Form is used.
+func (g *Gui) Form(id string) *Form {
+	// Find Form
+	var form *Form
+	for _, f := range g.Forms {
+		if f.ID() == id {
+			form = f
+			break
+		}
+	}
+	if form == nil {
+		form = &Form{
+			id:  id,
+			gui: g,
+		}
+		g.Forms = append(g.Forms, form)
+	}
+	return form
+}
+
 // Box is the way elements are grouped. Every Element
 type Box struct {
 	id       string
@@ -85,38 +119,4 @@ func (f *Form) Box(id string) *Box {
 		f.Boxes = append(f.Boxes, box)
 	}
 	return box
-}
-
-// Gui groups different forms together.
-type Gui struct {
-	Forms []*Form
-	Data  *Data
-}
-
-// NewGui returns a pointer to a new instance of a gui
-func NewGui() *Gui {
-	return &Gui{
-		Data: NewStorage(),
-	}
-}
-
-// Form returns the pointer to a form. If the id exists the existing
-// Form is used.
-func (g *Gui) Form(id string) *Form {
-	// Find Form
-	var form *Form
-	for _, f := range g.Forms {
-		if f.ID() == id {
-			form = f
-			break
-		}
-	}
-	if form == nil {
-		form = &Form{
-			id:  id,
-			gui: g,
-		}
-		g.Forms = append(g.Forms, form)
-	}
-	return form
 }
