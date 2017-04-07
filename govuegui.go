@@ -19,6 +19,12 @@
 //   Form("abc").Box("cde").Each(func(){})
 package govuegui
 
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+)
+
 // ElementType defines the
 type ElementType int
 
@@ -67,6 +73,15 @@ func (g *Gui) Form(id string) *Form {
 		g.Forms = append(g.Forms, form)
 	}
 	return form
+}
+
+// ServeHTTP implements the http handler interface
+func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	b, err := json.MarshalIndent(g, "", "  ")
+	if err != nil {
+		log.Println(err)
+	}
+	w.Write(b)
 }
 
 // Box is the way elements are grouped. Every Element

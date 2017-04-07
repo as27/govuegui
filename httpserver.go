@@ -1,9 +1,12 @@
 package govuegui
 
 import (
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/as27/golib/css/purecss"
@@ -25,9 +28,12 @@ var ServerPort = ":2700"
 // The router already includes all the paths which are needed
 // for the gui. It can be called like:
 //   r := govuegui.NewRouter()
+//   // Add you own routes
 //   r.HandleFunc("/products/{key}", ProductHandler)
-func NewRouter() *mux.Router {
+func NewRouter(g *Gui) *mux.Router {
 	r := mux.NewRouter()
+	r.HandleFunc(PathPrefix+"/", rootHandler)
+	r.Handle(PathPrefix+"/data", g)
 	r.HandleFunc(PathPrefix+"/lib/vue.min.js", vuejsdev.Handler)
 	r.HandleFunc(PathPrefix+"/lib/pure.min.css", purecss.Handler)
 	jsPrefix := PathPrefix + "/lib/"
@@ -47,18 +53,38 @@ func NewRouter() *mux.Router {
 
 // Serve wraps the http.ListenAndServe() function, but adds the
 // routes for the gui.
-func Serve() error {
-	r := NewRouter()
+func Serve(g *Gui) error {
+	r := NewRouter(g)
 	log.Println("Serving gvg on port: ", ServerPort)
 	return http.ListenAndServe(ServerPort, r)
 }
 
-func appHandler(w http.ResponseWriter, r *http.Request) {
-	b, err := ioutil.ReadFile("js/app.js")
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(404)
-		return
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	var templateString string
+	fpath := filepath.Join("html", "index.html")
+	_, err := os.Stat(fpath)
+	if err == os.ErrNotExist {
+		templateBox, err := rice.FindBox("html")
+		if err != nil {
+			log.Fatal(err)
+		}
+		templateString, err = templateBox.String("index.html")
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		tmpB, err := ioutil.ReadFile(fpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		templateString = string(tmpB)
 	}
-	w.Write(b)
+
+	tmplMessage, err := template.New("message").Parse(templateString)
+	if err != nil {
+		log.Fatal(err)
+	}
+	data := make(map[string]string)
+	data["PathPrefix"] = PathPrefix
+	tmplMessage.Execute(w, data)
 }

@@ -14,12 +14,14 @@ func TestRouterWithRice(t *testing.T) {
 }
 
 func routerTest(t *testing.T) {
-	ts := httptest.NewServer(NewRouter())
+	gui := NewGui()
+	ts := httptest.NewServer(NewRouter(gui))
 	defer ts.Close()
 	testUrls := []string{
 		"lib/vue.min.js",
 		"lib/pure.min.css",
 		"lib/app.js",
+		"",
 	}
 	for _, tURL := range testUrls {
 		res, err := http.Get(ts.URL + PathPrefix + "/" + tURL)
