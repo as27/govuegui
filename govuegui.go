@@ -67,7 +67,7 @@ func (g *Gui) Form(id string) *Form {
 	}
 	if form == nil {
 		form = &Form{
-			id:  id,
+			Key: id,
 			gui: g,
 		}
 		g.Forms = append(g.Forms, form)
@@ -86,34 +86,53 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Box is the way elements are grouped. Every Element
 type Box struct {
-	id       string
+	Key      string `json:"id"`
 	gui      *Gui
-	Elements []*Element
+	Elements []*Element `json:"elements"`
 }
 
 // ID returns the id of the box
 func (b *Box) ID() string {
-	return b.id
+	return b.Key
+}
+
+func (b *Box) Element(id string, inputType ElementType) *Element {
+	var el *Element
+	for _, e := range b.Elements {
+		if e.ID() == id {
+			el = e
+			break
+		}
+	}
+	if el == nil {
+		el = &Element{
+			Key:       id,
+			gui:       b.gui,
+			InputType: inputType,
+		}
+		b.Elements = append(b.Elements, el)
+	}
+	return el
 }
 
 func (b *Box) Input(id string) *Element {
-	return NewElement(id, b.gui, INPUT)
+	return b.Element(id, INPUT)
 }
 
 func (b *Box) Textarea(id string) *Element {
-	return NewElement(id, b.gui, TEXTAREA)
+	return b.Element(id, TEXTAREA)
 }
 
 // Form wrapps one ore more Boxes
 type Form struct {
-	id    string
+	Key   string `json:"id"`
 	gui   *Gui
 	Boxes []*Box
 }
 
 // ID returns the id of the form
 func (f *Form) ID() string {
-	return f.id
+	return f.Key
 }
 
 // Box returns the pointer to the box with the given id. If there
@@ -128,7 +147,7 @@ func (f *Form) Box(id string) *Box {
 	}
 	if box == nil {
 		box = &Box{
-			id:  id,
+			Key: id,
 			gui: f.gui,
 		}
 		f.Boxes = append(f.Boxes, box)

@@ -4,23 +4,15 @@ import "fmt"
 
 // Element represents a simple html element
 type Element struct {
-	id        string
+	Key       string `json:"id"`
 	gui       *Gui
-	inputType ElementType
-	options   []*Option
-}
-
-func NewElement(id string, gui *Gui, inputType ElementType) *Element {
-	return &Element{
-		id:        id,
-		gui:       gui,
-		inputType: inputType,
-	}
+	InputType ElementType `json:"type"`
+	Options   []*Option   `json:"options"`
 }
 
 // ID returns the id of the element
 func (e *Element) ID() string {
-	return e.id
+	return e.Key
 }
 
 func (e *Element) optionsName() string {
@@ -37,7 +29,7 @@ func (e *Element) Option(opt string, values ...string) {
 			Option: opt,
 			Values: values,
 		}
-		e.gui.Data.Set(e.optionsName(), append(e.options, &newOption))
+		e.gui.Data.Set(e.optionsName(), append(e.Options, &newOption))
 	}
 
 }
@@ -56,9 +48,9 @@ func (e *Element) getOption(opt string) *Option {
 }
 
 func (e *Element) Set(i interface{}) error {
-	return e.gui.Data.Set(e.id, i)
+	return e.gui.Data.Set(e.ID(), i)
 }
 
 func (e *Element) Get() interface{} {
-	return e.gui.Data.Get(e.id)
+	return e.gui.Data.Get(e.ID())
 }

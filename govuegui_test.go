@@ -37,10 +37,19 @@ func TestGuiForm(t *testing.T) {
 }
 
 func TestForm(t *testing.T) {
-	form := &Form{id: "123"}
+	form := &Form{Key: "123"}
 	b1 := form.Box("box1")
 	if b1 != form.Box("box1") {
 		t.Error("box1 has not been created correctly.")
+	}
+}
+
+func TestBox(t *testing.T) {
+	gui := NewGui()
+	b1 := gui.Form("F1").Box("b1")
+	b1.Input("I1")
+	if b1.Elements[0].ID() != "I1" {
+		t.Error("Input field not added to Box1!")
 	}
 }
 

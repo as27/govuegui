@@ -9,7 +9,7 @@ func TestElements(t *testing.T) {
 	gui := NewGui()
 	box := gui.Form("myForm").Box("testbox")
 	inputElement := box.Input("inputid")
-	if inputElement.inputType != INPUT {
+	if inputElement.InputType != INPUT {
 		t.Error("Wrong ElementType!")
 	}
 	// Add options
@@ -29,7 +29,7 @@ func TestElements(t *testing.T) {
 	}
 	//inputElement.Class("active", "form")
 	textareaElement := box.Textarea("textid")
-	if textareaElement.inputType != TEXTAREA {
+	if textareaElement.InputType != TEXTAREA {
 		t.Error("Wrong ElementType!")
 	}
 }
