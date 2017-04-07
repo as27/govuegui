@@ -27,57 +27,39 @@ var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 // Data is the type were everything is stored and which can be used for
 // Marshaling to json.
 type Data struct {
-	Values       map[string]dataType  `json:"values"`
-	Strings      map[string]string    `json:"strings"`
-	PStrings     map[string]*string   `json:"pstrings"`
-	StringSlices map[string][]string  `json:"stringSlices"`
-	Ints         map[string]int       `json:"ints"`
-	PInts        map[string]*int      `json:"pints"`
-	Floats64     map[string]float64   `json:"floats64"`
-	Options      map[string][]*Option `json:"options"`
+	Values map[string]dataType    `json:"values"`
+	Data   map[string]interface{} `json:"data"`
 }
 
 // NewStorage returns a pointer to a new empty storage
 func NewStorage() *Data {
 	return &Data{
-		Values:       make(map[string]dataType),
-		Strings:      make(map[string]string),
-		PStrings:     make(map[string]*string),
-		StringSlices: make(map[string][]string),
-		Ints:         make(map[string]int),
-		PInts:        make(map[string]*int),
-		Floats64:     make(map[string]float64),
-		Options:      make(map[string][]*Option),
+		Values: make(map[string]dataType),
+		Data:   make(map[string]interface{}),
 	}
 }
 
 // Set is used to set the data of a type.
 func (d *Data) Set(key string, i interface{}) error {
-	switch i := i.(type) {
+	switch i.(type) {
 	case string:
 		d.Values[key] = STRING
-		d.Strings[key] = i
 	case []string:
 		d.Values[key] = STRINGSLICE
-		d.StringSlices[key] = i
 	case *string:
 		d.Values[key] = STRINGPOINTER
-		d.PStrings[key] = i
 	case int:
 		d.Values[key] = INT
-		d.Ints[key] = i
 	case *int:
 		d.Values[key] = INTPOINTER
-		d.PInts[key] = i
 	case float64:
 		d.Values[key] = FLOAT64
-		d.Floats64[key] = i
 	case []*Option:
 		d.Values[key] = OPTION
-		d.Options[key] = i
 	default:
 		return ErrTypeNotSupported
 	}
+	d.Data[key] = i
 	return nil
 
 }
@@ -97,56 +79,23 @@ func (d *Data) Get(key string) interface{} {
 // GetWithErrors get a value and returns an error. Because of the
 // api there is a Get() and a GetWithErrors() function.
 func (d *Data) GetWithErrors(key string) (interface{}, error) {
-	dType, ok := d.Values[key]
+	_, ok := d.Values[key]
 	if !ok {
 		return nil, ErrKeyNotFound
 	}
-	switch dType {
-	case STRING:
-		return d.Strings[key], nil
-	case STRINGSLICE:
-		return d.StringSlices[key], nil
-	case STRINGPOINTER:
-		return d.PStrings[key], nil
-	case INT:
-		return d.Ints[key], nil
-	case INTPOINTER:
-		return d.PInts[key], nil
-	case FLOAT64:
-		return d.Floats64[key], nil
-	case OPTION:
-		return d.Options[key], nil
-	}
-	return nil, nil
+	return d.Data[key], nil
 }
 
 // Remove just deletes the key from the storage. True is returned
 // when something could be removed. If the key not exists inside
 // the storage nothing could be deleted, so false is returned.
 func (d *Data) Remove(key string) bool {
-	dType, ok := d.Values[key]
+	_, ok := d.Values[key]
 	if !ok {
 		return false
 	}
 	delete(d.Values, key)
-	switch dType {
-	case STRING:
-		delete(d.Strings, key)
-	case STRINGSLICE:
-		delete(d.StringSlices, key)
-	case STRINGPOINTER:
-		delete(d.PStrings, key)
-	case INT:
-		delete(d.Ints, key)
-	case INTPOINTER:
-		delete(d.PInts, key)
-	case FLOAT64:
-		delete(d.Floats64, key)
-	case OPTION:
-		delete(d.Options, key)
-	default:
-		return false
-	}
+	delete(d.Data, key)
 	return true
 }
 
