@@ -3,12 +3,30 @@ const PathPrefix = "/govuegui";
 const gvgforms = Vue.component('gvgforms',{
     template: `<div>
         <ul>
-        
+        <li v-for="form in data.Forms">
+            <router-link 
+                :to="{name: 'gvgform', params: { formid: form.id}}">
+                {{form.id}}</router-link>
+        </li>
         </ul>
+        <gvgform :data=data :formid=formid></gvgform>
         </div>`,
-    props: {
-        data: Object
-    }
+        props: ['data', 'formid']
+})
+
+const gvgform = Vue.component('gvgform', {
+    template: `<div>Hi</div>`,
+    computed: {
+        form: function () {
+            forms = this.data.Forms
+            for (index = 0; index < forms.length; ++index) {
+                if (forms[index].formid == this.formid){
+                    return forms[index];
+                }
+            }
+        }
+    },
+    props: ['data', 'formid']
 })
 
 const routes = [
@@ -18,8 +36,16 @@ const routes = [
         components: {
            default: gvgforms
         },
-        props: [],
+        props: {
+            default: true
+        },
         children: [
+             {
+                path: '/:formid',
+                name: 'gvgform',
+                component: gvgform,
+                props: true
+            }
         ]
     }
 ]
