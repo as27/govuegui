@@ -5,16 +5,16 @@ import (
 	"errors"
 )
 
-type dataType int
+type dataType string
 
 const (
-	STRING dataType = iota
-	STRINGSLICE
-	STRINGPOINTER
-	INT
-	INTPOINTER
-	FLOAT64
-	OPTION
+	STRING        dataType = "STRING"
+	STRINGSLICE            = "STRINGARRAY"
+	STRINGPOINTER          = "STRINGPOINTER"
+	INT                    = "INT"
+	INTPOINTER             = "INTPOINTER"
+	FLOAT64                = "FLOAT64"
+	OPTION                 = "OPTION"
 )
 
 // ErrTypeNotSupported is returned by Set() when the given type could

@@ -51,6 +51,10 @@ func TestBox(t *testing.T) {
 	if b1.Elements[0].ID() != "I1" {
 		t.Error("Input field not added to Box1!")
 	}
+	b1.Option("title", "This is my title")
+	if b1.Options[0].Values[0] != "This is my title" {
+		t.Error("Option was not set correct at Box1")
+	}
 }
 
 func TestSetGet(t *testing.T) {

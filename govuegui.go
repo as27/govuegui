@@ -26,19 +26,47 @@ import (
 )
 
 // ElementType defines the
-type ElementType int
+type ElementType string
 
 // Defining the allowed ElementTypes
 const (
-	INPUT ElementType = iota
-	TEXTAREA
-	SELECT
+	INPUT    ElementType = "INPUT"
+	TEXTAREA             = "TEXTAREA"
+	SELECT               = "SELECT"
 )
 
 // Option holds the one option of a element
 type Option struct {
 	Option string
 	Values []string
+}
+
+type optioner interface {
+	Option(string, ...string)
+	getOption(string) *Option
+	appendOption(*Option)
+}
+
+func addOption(o optioner, opt string, values ...string) {
+	op := o.getOption(opt)
+	if op != nil {
+		op.Values = values
+	} else {
+		newOption := Option{
+			Option: opt,
+			Values: values,
+		}
+		o.appendOption(&newOption)
+	}
+}
+
+func getOption(opt string, opts []*Option) *Option {
+	for _, o := range opts {
+		if o.Option == opt {
+			return o
+		}
+	}
+	return nil
 }
 
 // Gui groups different forms together.
@@ -84,45 +112,6 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Write(b)
 }
 
-// Box is the way elements are grouped. Every Element
-type Box struct {
-	Key      string `json:"id"`
-	gui      *Gui
-	Elements []*Element `json:"elements"`
-}
-
-// ID returns the id of the box
-func (b *Box) ID() string {
-	return b.Key
-}
-
-func (b *Box) Element(id string, inputType ElementType) *Element {
-	var el *Element
-	for _, e := range b.Elements {
-		if e.ID() == id {
-			el = e
-			break
-		}
-	}
-	if el == nil {
-		el = &Element{
-			Key:       id,
-			gui:       b.gui,
-			InputType: inputType,
-		}
-		b.Elements = append(b.Elements, el)
-	}
-	return el
-}
-
-func (b *Box) Input(id string) *Element {
-	return b.Element(id, INPUT)
-}
-
-func (b *Box) Textarea(id string) *Element {
-	return b.Element(id, TEXTAREA)
-}
-
 // Form wrapps one ore more Boxes
 type Form struct {
 	Key   string `json:"id"`
@@ -153,4 +142,56 @@ func (f *Form) Box(id string) *Box {
 		f.Boxes = append(f.Boxes, box)
 	}
 	return box
+}
+
+// Box is the way elements are grouped. Every Element
+type Box struct {
+	Key      string    `json:"id"`
+	Options  []*Option `json:"options"`
+	gui      *Gui
+	Elements []*Element `json:"elements"`
+}
+
+// ID returns the id of the box
+func (b *Box) ID() string {
+	return b.Key
+}
+
+func (b *Box) Option(opt string, values ...string) {
+	addOption(b, opt, values...)
+}
+
+func (b *Box) getOption(opt string) *Option {
+	return getOption(opt, b.Options)
+}
+
+func (b *Box) appendOption(o *Option) {
+	b.Options = append(b.Options, o)
+}
+
+func (b *Box) Element(id string, inputType ElementType) *Element {
+	var el *Element
+	for _, e := range b.Elements {
+		if e.ID() == id {
+			el = e
+			break
+		}
+	}
+	if el == nil {
+		el = &Element{
+			Key:       id,
+			gui:       b.gui,
+			InputType: inputType,
+		}
+		b.Elements = append(b.Elements, el)
+	}
+	return el
+}
+
+func (b *Box) Input(id string) *Element {
+	return b.Element(id, INPUT)
+}
+
+func (b *Box) Textarea(id string) *Element {
+	return b.Element(id, TEXTAREA)
 }

@@ -1,7 +1,5 @@
 package govuegui
 
-import "fmt"
-
 // Element represents a simple html element
 type Element struct {
 	Key       string `json:"id"`
@@ -15,36 +13,17 @@ func (e *Element) ID() string {
 	return e.Key
 }
 
-func (e *Element) optionsName() string {
-	return fmt.Sprintf("element-options-%s", e.ID())
-}
-
 // Option sets the given values as option
 func (e *Element) Option(opt string, values ...string) {
-	o := e.getOption(opt)
-	if o != nil {
-		o.Values = values
-	} else {
-		newOption := Option{
-			Option: opt,
-			Values: values,
-		}
-		e.gui.Data.Set(e.optionsName(), append(e.Options, &newOption))
-	}
-
+	addOption(e, opt, values...)
 }
 
 func (e *Element) getOption(opt string) *Option {
-	opts, err := e.gui.Data.GetWithErrors(e.optionsName())
-	if err != nil {
-		return nil
-	}
-	for _, o := range opts.([]*Option) {
-		if o.Option == opt {
-			return o
-		}
-	}
-	return nil
+	return getOption(opt, e.Options)
+}
+
+func (e *Element) appendOption(o *Option) {
+	e.Options = append(e.Options, o)
 }
 
 func (e *Element) Set(i interface{}) error {
