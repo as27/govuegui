@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
    
     <script src="{{ .PathPrefix }}/lib/vue.min.js"></script>
+    <script src="{{ .PathPrefix }}/lib/vue-router.min.js"></script>
+    <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
     
 
      <link rel="stylesheet" href="{{ .PathPrefix }}/pure.min.css" >
     </head>
     <body>
         <div id="govuegui">
-            {{"{{"}} message {{"}}"}}
+            <gvgforms :data=data ></gvgforms>
+         
         </div>
         <script src="{{ .PathPrefix }}/lib/app.js"></script>
     </body>

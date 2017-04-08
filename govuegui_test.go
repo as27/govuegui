@@ -42,6 +42,17 @@ func TestForm(t *testing.T) {
 	if b1 != form.Box("box1") {
 		t.Error("box1 has not been created correctly.")
 	}
+	testOpts := []string{"val1", "val2", "val3"}
+	form.Option("f1option", testOpts...)
+	if !reflect.DeepEqual(
+		form.Options[0].Values,
+		testOpts,
+	) {
+		t.Errorf("Form Options not set correct\nExp: %v\nGot: %v",
+			testOpts,
+			form.Options[0].Values,
+		)
+	}
 }
 
 func TestBox(t *testing.T) {

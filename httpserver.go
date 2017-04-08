@@ -11,6 +11,8 @@ import (
 	rice "github.com/GeertJohan/go.rice"
 	"github.com/as27/golib/css/purecss"
 	"github.com/as27/golib/js/vuejsdev"
+	"github.com/as27/golib/js/vueresourcemin"
+	"github.com/as27/golib/js/vueroutermin"
 	"github.com/gorilla/mux"
 )
 
@@ -35,6 +37,8 @@ func NewRouter(g *Gui) *mux.Router {
 	r.HandleFunc(PathPrefix+"/", rootHandler)
 	r.Handle(PathPrefix+"/data", g)
 	r.HandleFunc(PathPrefix+"/lib/vue.min.js", vuejsdev.Handler)
+	r.HandleFunc(PathPrefix+"/lib/vue-router.min.js", vueroutermin.Handler)
+	r.HandleFunc(PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/pure.min.css", purecss.Handler)
 	jsPrefix := PathPrefix + "/lib/"
 	if useRice {

@@ -114,14 +114,27 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Form wrapps one ore more Boxes
 type Form struct {
-	Key   string `json:"id"`
-	gui   *Gui
-	Boxes []*Box
+	Key     string    `json:"id"`
+	Options []*Option `json:"options"`
+	gui     *Gui
+	Boxes   []*Box
 }
 
 // ID returns the id of the form
 func (f *Form) ID() string {
 	return f.Key
+}
+
+func (f *Form) Option(opt string, values ...string) {
+	addOption(f, opt, values...)
+}
+
+func (f *Form) getOption(opt string) *Option {
+	return getOption(opt, f.Options)
+}
+
+func (f *Form) appendOption(o *Option) {
+	f.Options = append(f.Options, o)
 }
 
 // Box returns the pointer to the box with the given id. If there
