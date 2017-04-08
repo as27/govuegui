@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/as27/govuegui?status.svg)](https://godoc.org/github.com/as27/govuegui)
+
 # govuegui
 A web GUI for Go
 
