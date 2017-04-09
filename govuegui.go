@@ -30,9 +30,9 @@ type ElementType string
 
 // Defining the allowed ElementTypes
 const (
-	INPUT    ElementType = "INPUT"
-	TEXTAREA             = "TEXTAREA"
-	SELECT               = "SELECT"
+	INPUT    ElementType = "GVGINPUT"
+	TEXTAREA             = "GVGTEXTAREA"
+	SELECT               = "GVGSELECT"
 )
 
 // Option holds the one option of a element

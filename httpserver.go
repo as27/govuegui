@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	rice "github.com/GeertJohan/go.rice"
-	"github.com/as27/golib/css/purecss"
+	"github.com/as27/golib/css/bulma"
 	"github.com/as27/golib/js/vuejsdev"
 	"github.com/as27/golib/js/vueresourcemin"
 	"github.com/as27/golib/js/vueroutermin"
@@ -39,7 +39,7 @@ func NewRouter(g *Gui) *mux.Router {
 	r.HandleFunc(PathPrefix+"/lib/vue.min.js", vuejsdev.Handler)
 	r.HandleFunc(PathPrefix+"/lib/vue-router.min.js", vueroutermin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
-	r.HandleFunc(PathPrefix+"/lib/pure.min.css", purecss.Handler)
+	r.HandleFunc(PathPrefix+"/lib/bulma.css", bulma.Handler)
 	jsPrefix := PathPrefix + "/lib/"
 	if useRice {
 		box := rice.MustFindBox("lib")

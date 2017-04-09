@@ -1,7 +1,24 @@
 const PathPrefix = "/govuegui";
+const gvginput = Vue.component('gvginput',{
+    template: `<input class="input" type="text" v-model="data.Data.data[element.id]">`,
+    props: ['data', 'element']
+})
+const gvgtextarea = Vue.component('gvgtextarea',{
+    template: `<textarea class="textarea" v-model="data.Data.data[element.id]"></textarea>`,
+    props: ['data', 'element']
+})
 const gvgelement = Vue.component('gvgelement',{
-    template: `<div>{{element.id}}</div>`,
+    template: `<div class="field"><label class="label">{{element.id}}</label>
+    <p class="control"> 
+    <component :is=element.type :element=element :data=data v-model="data.Data.data[element.id]"></component>
+    </p>
+    </div>`,
+    components: {
+        GVGINPUT: gvginput,
+        GVGTEXTAREA: gvgtextarea
+    },
     props: {
+        data: Object,
         element: {
             type: Object,
             default: function(){
@@ -14,10 +31,11 @@ const gvgelement = Vue.component('gvgelement',{
 const gvgbox = Vue.component('gvgbox',{
     template: `<div>{{box.id}}
     <div class="gvgelement" v-for="element in box.elements">
-    <gvgelement :element=element></gvgelement>
+    <gvgelement :element=element :data=data></gvgelement>
     </div>
     </div>`,
     props: {
+        data: Object,
         box: {
             type: Object,
             default: function(){
@@ -30,7 +48,7 @@ const gvgbox = Vue.component('gvgbox',{
 const gvgform = Vue.component('gvgform', {
     template: `<div><h1>{{form.id}}</h1>
     <div class="box" v-for="box in form.Boxes">
-    <gvgbox :box=box></gvgbox></div>
+    <gvgbox :box=box :data=data></gvgbox></div>
     
     </div>`,
     data: function(){
@@ -60,23 +78,26 @@ const gvgform = Vue.component('gvgform', {
 })
 
 const gvgforms = Vue.component('gvgforms', {
-    template: `<div>
-        <div id="menu">
-            <div class="pure-menu">
-            <a class="pure-menu-heading" href="#">Company</a>
-            <ul class="pure-menu-list">
-            <li class="pure-menu-item" v-for="form in data.Forms">
+    template: `<div class="columns">
+        <div class="column is-one-quarter">
+        <aside class="menu">
+        <p class="menu-label">
+            Forms
+        </p> 
+            <ul class="menu-list">
+            <li  v-for="form in data.Forms">
                 <router-link 
-                    class="pure-menu-link"
+                    active-class="is-active"
                     :to="{name: 'gvgform', params: { formid: form.id}}">
                     {{form.id}}</router-link>
             </li>
             </ul>
-            </div>
-            <div id="main">
+        </aside>
+        </div>
+            <div class="column">
             <router-view :data=data :form=forms[formid] :formid=formid></router-view>
             </div>
-        </div>
+        
         </div>`,
 
     data: function(){

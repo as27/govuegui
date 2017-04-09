@@ -21,7 +21,7 @@ func routerTest(t *testing.T) {
 		"lib/vue.min.js",
 		"lib/vue-resource.min.js",
 		"lib/vue-router.min.js",
-		"lib/pure.min.css",
+		"lib/bulma.css",
 		"lib/app.js",
 		"",
 	}
