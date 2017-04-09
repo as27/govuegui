@@ -29,7 +29,7 @@ const gvgelement = Vue.component('gvgelement',{
 })
 
 const gvgbox = Vue.component('gvgbox',{
-    template: `<div>{{box.id}}
+    template: `<div><h2 class="subtitle">{{box.id}}</h2>
     <div class="gvgelement" v-for="element in box.elements">
     <gvgelement :element=element :data=data></gvgelement>
     </div>
@@ -46,10 +46,10 @@ const gvgbox = Vue.component('gvgbox',{
 });
 
 const gvgform = Vue.component('gvgform', {
-    template: `<div><h1>{{form.id}}</h1>
+    template: `<div><h1 class="title is-1">{{form.id}}</h1>
     <div class="box" v-for="box in form.Boxes">
     <gvgbox :box=box :data=data></gvgbox></div>
-    
+    <button class="button is-primary" @click="saveData">Submit</button>
     </div>`,
     data: function(){
         return {
@@ -57,7 +57,9 @@ const gvgform = Vue.component('gvgform', {
         }
     },
     methods: {
-       
+        saveData: function () {
+            this.$http.post(PathPrefix+"/data", this.data);
+        }   
     },
     components: {
         gvgbox: gvgbox

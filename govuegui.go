@@ -21,6 +21,7 @@ package govuegui
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -105,11 +106,24 @@ func (g *Gui) Form(id string) *Form {
 
 // ServeHTTP implements the http handler interface
 func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	b, err := json.MarshalIndent(g, "", "  ")
-	if err != nil {
-		log.Println(err)
+	if r.Method == "GET" {
+		b, err := json.MarshalIndent(g, "", "  ")
+		if err != nil {
+			log.Println(err)
+		}
+		w.Write(b)
 	}
-	w.Write(b)
+	if r.Method == "POST" {
+		rbody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			log.Println(err)
+		}
+		err = json.Unmarshal(rbody, g)
+		if err != nil {
+			log.Println(err)
+		}
+		log.Printf("%#v", g)
+	}
 }
 
 // Form wrapps one ore more Boxes

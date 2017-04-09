@@ -15,5 +15,10 @@ func main() {
 	b1.Textarea("Area").Set("This is the text of the textarea")
 	gui.Form("Form1").Box("Box2").Input("Comment").Set("This is a comment.")
 	gui.Form("Form2").Box("B2").Input("Title").Set("Mr. Andersson")
+	addressForm := gui.Form("Adress form")
+	addressForm.Box("Name").Input("First Name")
+	addressForm.Box("Name").Input("Last Name")
+	addressForm.Box("Private").Input("Street")
+	addressForm.Box("Private").Input("City")
 	log.Fatal(govuegui.Serve(gui))
 }
