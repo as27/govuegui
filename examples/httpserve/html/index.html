@@ -9,11 +9,13 @@
     <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
     
 
-     <link rel="stylesheet" href="{{ .PathPrefix }}/pure.min.css" >
+     <link rel="stylesheet" href="{{ .PathPrefix }}/lib/pure.min.css" >
+    
     </head>
     <body>
+
         <div id="govuegui">
-            <router-view :data=data ></router-view>
+            <router-view :data=data :forms=forms ></router-view>
              
         </div>
         <script src="{{ .PathPrefix }}/lib/app.js"></script>
