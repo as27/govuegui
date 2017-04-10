@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/as27/govuegui"
@@ -8,7 +9,7 @@ import (
 
 func main() {
 	gui := govuegui.NewGui()
-	gui.Form("Form1").Box("Box1").Input("Name").Set("Smith")
+	/*gui.Form("Form1").Box("Box1").Input("Name").Set("Smith")
 	gui.Form("Form1").Box("Box1").Input("Age").Set(27)
 	gui.Form("Form1").Box("Box1").Input("Age").Option("class", "active", "int")
 	b1 := gui.Form("Form1").Box("Box1")
@@ -19,6 +20,21 @@ func main() {
 	addressForm.Box("Name").Input("First Name")
 	addressForm.Box("Name").Input("Last Name")
 	addressForm.Box("Private").Input("Street")
-	addressForm.Box("Private").Input("City")
+	addressForm.Box("Private").Input("City")*/
+	a := 123
+	b := 200
+	c := a + b
+	gui.Form("Sum").Box("Numbers").Input("A").Set(a)
+	gui.Form("Sum").Box("Numbers").Input("B").Set(b)
+	gui.Form("Sum").Box("Numbers").Input("A + B").Set(c)
+	gui.CB = func() {
+		//a = gui.Form("Sum").Box("Numbers").Input("A").Get().(int)
+		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a)
+		fmt.Println("a wird gesetzt: ", a)
+		d := gui.Form("Sum").Box("Numbers").Input("A").Get()
+		fmt.Println("a wird gesetzt: ", d)
+		fmt.Printf("d:%T - a:%T", d, a)
+		gui.Form("Sum").Box("Numbers").Input("A + B").Set(d)
+	}
 	log.Fatal(govuegui.Serve(gui))
 }

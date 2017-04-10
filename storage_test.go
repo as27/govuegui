@@ -131,10 +131,13 @@ func TestMarshal(t *testing.T) {
 		//t.Error("Can not Marshal the data")
 		t.Error(err)
 	}
-	d := NewStorage()
-	err = json.Unmarshal(b, d)
+	d := data
+	err = d.Unmarshal(b)
 	if err != nil {
 		t.Error(err)
+	}
+	if !reflect.DeepEqual(data.Data, d.Data) {
+		t.Errorf("Unmarshal gets another result\nExp: %#v\nGot: %#v", data, d)
 	}
 }
 

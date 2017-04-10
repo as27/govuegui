@@ -74,6 +74,7 @@ func getOption(opt string, opts []*Option) *Option {
 type Gui struct {
 	Forms []*Form
 	Data  *Data
+	CB    func() `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
@@ -118,10 +119,11 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		err = json.Unmarshal(rbody, g)
+		err = g.Data.Unmarshal(rbody)
 		if err != nil {
 			log.Println(err)
 		}
+		g.CB()
 		log.Printf("%#v", g)
 	}
 }

@@ -29,6 +29,7 @@ var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 type Data struct {
 	Values map[string]dataType    `json:"values"`
 	Data   map[string]interface{} `json:"data"`
+	cache  map[string]interface{}
 }
 
 // NewStorage returns a pointer to a new empty storage
@@ -36,6 +37,7 @@ func NewStorage() *Data {
 	return &Data{
 		Values: make(map[string]dataType),
 		Data:   make(map[string]interface{}),
+		cache:  make(map[string]interface{}),
 	}
 }
 
@@ -60,8 +62,8 @@ func (d *Data) Set(key string, i interface{}) error {
 		return ErrTypeNotSupported
 	}
 	d.Data[key] = i
+	d.cache[key] = i
 	return nil
-
 }
 
 // Get enables a simple api, which just returns the value
@@ -99,14 +101,38 @@ func (d *Data) Remove(key string) bool {
 	return true
 }
 
+// Unmarshal a slice of bytes into the data
+func (d *Data) Unmarshal(b []byte) error {
+	data := NewStorage()
+	err := json.Unmarshal(b, data)
+	if err != nil {
+		return err
+	}
+	for k, dType := range d.Values {
+		switch dType {
+		default:
+			d.Data[k] = data.Data[k]
+		case STRINGPOINTER:
+			sp := d.cache[k].(*string)
+			*sp = data.Data[k].(string)
+			d.Data[k] = sp
+		case INT:
+			d.Data[k] = int(data.Data[k].(float64))
+		case INTPOINTER:
+			ip := d.cache[k].(*int)
+			*ip = int(data.Data[k].(float64))
+			d.Data[k] = ip
+		case FLOAT64:
+			//d.Data[k], err = strconv.ParseFloat(data.Data[k].(string), 64)
+		}
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Marshal the storage into json format
 func (d *Data) Marshal() ([]byte, error) {
 	return json.MarshalIndent(d, "", "  ")
-}
-
-// Unmarshal a slice of bytes into the data
-func Unmarshal(b []byte) (*Data, error) {
-	data := NewStorage()
-	err := json.Unmarshal(b, data)
-	return data, err
 }
