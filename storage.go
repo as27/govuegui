@@ -3,6 +3,8 @@ package govuegui
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"strconv"
 )
 
 type dataType string
@@ -103,12 +105,15 @@ func (d *Data) Remove(key string) bool {
 
 // Unmarshal a slice of bytes into the data
 func (d *Data) Unmarshal(b []byte) error {
-	data := NewStorage()
-	err := json.Unmarshal(b, data)
-	if err != nil {
-		return err
-	}
+	return nil
+}
+
+// SetData a slice of bytes into the data
+func (d *Data) SetData(data *Data) error {
+	var err error
+	fmt.Printf("%#v", data)
 	for k, dType := range d.Values {
+		fmt.Println("storage 114 -->", k, dType, data.Data[k])
 		switch dType {
 		default:
 			d.Data[k] = data.Data[k]
@@ -117,19 +122,38 @@ func (d *Data) Unmarshal(b []byte) error {
 			*sp = data.Data[k].(string)
 			d.Data[k] = sp
 		case INT:
-			d.Data[k] = int(data.Data[k].(float64))
+			var v float64
+			v, err = interfaceToFloat(data.Data[k])
+			d.Data[k] = int(v)
 		case INTPOINTER:
+			var v float64
+			v, err = interfaceToFloat(data.Data[k])
 			ip := d.cache[k].(*int)
-			*ip = int(data.Data[k].(float64))
+			*ip = int(v)
 			d.Data[k] = ip
 		case FLOAT64:
-			//d.Data[k], err = strconv.ParseFloat(data.Data[k].(string), 64)
+			var v float64
+			v, err = interfaceToFloat(data.Data[k])
+			d.Data[k] = v
 		}
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+func interfaceToFloat(i interface{}) (float64, error) {
+	switch v := i.(type) {
+	case string:
+		return strconv.ParseFloat(v, 64)
+	case int:
+		return float64(v), nil
+	case float64:
+		return v, nil
+	default:
+		return 0, fmt.Errorf("interfaceToFloat: %T not expected Type", i)
+	}
 }
 
 // Marshal the storage into json format

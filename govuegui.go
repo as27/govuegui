@@ -119,12 +119,16 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 		}
-		err = g.Data.Unmarshal(rbody)
+		newG := NewGui()
+		err = json.Unmarshal(rbody, newG)
+		if err != nil {
+			log.Println(err)
+		}
+		err = g.Data.SetData(newG.Data)
 		if err != nil {
 			log.Println(err)
 		}
 		g.CB()
-		log.Printf("%#v", g)
 	}
 }
 

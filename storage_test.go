@@ -161,3 +161,42 @@ func TestRemove(t *testing.T) {
 	}
 
 }
+
+func TestInterfaceToFloat(t *testing.T) {
+	tests := []struct {
+		invalue  interface{}
+		expvalue float64
+		expError bool
+	}{
+		{
+			123,
+			float64(123),
+			false,
+		},
+		{
+			"123",
+			float64(123),
+			false,
+		},
+		{
+			float64(123),
+			float64(123),
+			false,
+		},
+		{
+			"string",
+			float64(0),
+			true,
+		},
+	}
+	for _, test := range tests {
+		got, err := interfaceToFloat(test.invalue)
+		if test.expError && err == nil {
+			t.Error("Testcase: ", test.invalue)
+			t.Error("Expected an error!")
+		}
+		if test.expvalue != got {
+			t.Errorf("Exp: %v\nGot: %v", test.expvalue, got)
+		}
+	}
+}

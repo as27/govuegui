@@ -58,8 +58,20 @@ const gvgform = Vue.component('gvgform', {
     },
     methods: {
         saveData: function () {
-            this.$http.post(PathPrefix+"/data", this.data);
-        }   
+            this.$http.post(PathPrefix + "/data", this.data).then(
+                res => {
+                    console.log("post ready");
+                    this.$http.get(PathPrefix + "/data").then(
+                        (res) => {
+                            app.data = res.body;
+                            for (var i = 0; i < app.data.Forms.length; i++) {
+                                app.forms[app.data.Forms[i].id] = app.data.Forms[i];
+                            }
+                        }
+                    );
+                },res=>{console.log("There is an error")}
+            );
+        }
     },
     components: {
         gvgbox: gvgbox
