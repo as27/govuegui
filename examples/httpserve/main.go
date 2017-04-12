@@ -21,6 +21,12 @@ func main() {
 	addressForm.Box("Name").Input("Last Name")
 	addressForm.Box("Private").Input("Street")
 	addressForm.Box("Private").Input("City")*/
+	inputBox := gui.Form("Input").Box("Input")
+	inputBox.Input("x").Set(0)
+	inputBox.Input("y").Set(0)
+	inputBox.Input("n").Set(0)
+	resultBox := gui.Form("Result").Box("Result")
+
 	a := 123
 	b := 200
 	c := a + b
@@ -35,6 +41,14 @@ func main() {
 		fmt.Println("d wird gesetzt mit Wert a: ", d)
 		fmt.Printf("d:%T - a:%T", d, a)
 		gui.Form("Sum").Box("Numbers").Input("A + B").Set(a + b)
+		n := inputBox.Input("n")
+		resultBox.Clear()
+		for i := 0; i < n.Get().(int); i++ {
+			name := fmt.Sprintf("n=%d: (x+y)*n", i)
+			x := inputBox.Input("x").Get().(int)
+			y := inputBox.Input("y").Get().(int)
+			resultBox.Input(name).Set((x + y) * i)
+		}
 	}
 	log.Fatal(govuegui.Serve(gui))
 }

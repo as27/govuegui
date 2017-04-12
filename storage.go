@@ -111,9 +111,7 @@ func (d *Data) Unmarshal(b []byte) error {
 // SetData a slice of bytes into the data
 func (d *Data) SetData(data *Data) error {
 	var err error
-	fmt.Printf("%#v", data)
 	for k, dType := range d.Values {
-		fmt.Println("storage 114 -->", k, dType, data.Data[k])
 		switch dType {
 		default:
 			d.Data[k] = data.Data[k]

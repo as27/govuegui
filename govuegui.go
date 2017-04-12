@@ -194,6 +194,15 @@ func (b *Box) Option(opt string, values ...string) {
 	addOption(b, opt, values...)
 }
 
+func (b *Box) Clear() {
+	for _, el := range b.Elements {
+		// Remove values from storage
+		b.gui.Data.Remove(el.ID())
+	}
+	// Set Elements to empty struct
+	b.Elements = []*Element{}
+}
+
 func (b *Box) getOption(opt string) *Option {
 	return getOption(opt, b.Options)
 }
