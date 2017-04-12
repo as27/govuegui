@@ -34,6 +34,7 @@ const (
 	INPUT    ElementType = "GVGINPUT"
 	TEXTAREA             = "GVGTEXTAREA"
 	SELECT               = "GVGSELECT"
+	TEXT                 = "GVGTEXT"
 )
 
 // Option holds the one option of a element
@@ -236,4 +237,8 @@ func (b *Box) Input(id string) *Element {
 
 func (b *Box) Textarea(id string) *Element {
 	return b.Element(id, TEXTAREA)
+}
+
+func (b *Box) Text(id string) *Element {
+	return b.Element(id, TEXT)
 }

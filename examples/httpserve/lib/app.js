@@ -7,6 +7,10 @@ const gvgtextarea = Vue.component('gvgtextarea',{
     template: `<textarea class="textarea" v-model="data.Data.data[element.id]"></textarea>`,
     props: ['data', 'element']
 })
+const gvgtext = Vue.component('gvgtext',{
+    template: `<div class="text">{{data.Data.data[element.id]}}</div>`,
+    props: ['data', 'element']
+})
 const gvgelement = Vue.component('gvgelement',{
     template: `<div class="field"><label class="label">{{element.id}}</label>
     <p class="control"> 
@@ -15,7 +19,8 @@ const gvgelement = Vue.component('gvgelement',{
     </div>`,
     components: {
         GVGINPUT: gvginput,
-        GVGTEXTAREA: gvgtextarea
+        GVGTEXTAREA: gvgtextarea,
+        GVGTEXT: gvgtext
     },
     props: {
         data: Object,
