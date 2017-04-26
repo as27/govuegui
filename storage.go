@@ -17,6 +17,7 @@ const (
 	INTPOINTER             = "INTPOINTER"
 	FLOAT64                = "FLOAT64"
 	OPTION                 = "OPTION"
+	FUNCPOINTER            = "FUNCPOINTER"
 )
 
 // ErrTypeNotSupported is returned by Set() when the given type could
@@ -60,6 +61,8 @@ func (d *Data) Set(key string, i interface{}) error {
 		d.Values[key] = FLOAT64
 	case []*Option:
 		d.Values[key] = OPTION
+	case *func():
+		d.Values[key] = FUNCPOINTER
 	default:
 		return ErrTypeNotSupported
 	}
@@ -129,6 +132,10 @@ func (d *Data) SetData(data *Data) error {
 			ip := d.cache[k].(*int)
 			*ip = int(v)
 			d.Data[k] = ip
+		case FUNCPOINTER:
+			fp := d.cache[k].(*func())
+			*fp = data.Data[k].(func())
+			d.Data[k] = fp
 		case FLOAT64:
 			var v float64
 			v, err = interfaceToFloat(data.Data[k])

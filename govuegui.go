@@ -35,6 +35,7 @@ const (
 	TEXTAREA             = "GVGTEXTAREA"
 	SELECT               = "GVGSELECT"
 	TEXT                 = "GVGTEXT"
+	BUTTON               = "GVGBUTTON"
 )
 
 // Option holds the one option of a element
@@ -73,15 +74,17 @@ func getOption(opt string, opts []*Option) *Option {
 
 // Gui groups different forms together.
 type Gui struct {
-	Forms []*Form
-	Data  *Data
-	CB    func() `json:"-"`
+	Forms   []*Form
+	Data    *Data
+	Actions map[string]func() `json:"-"`
+	CB      func()            `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
 func NewGui() *Gui {
 	return &Gui{
-		Data: NewStorage(),
+		Data:    NewStorage(),
+		Actions: make(map[string]func()),
 	}
 }
 
@@ -108,6 +111,15 @@ func (g *Gui) Form(id string) *Form {
 
 // ServeHTTP implements the http handler interface
 func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	action := q.Get("action")
+	if action != "" {
+		a, ok := g.Actions[action]
+		if ok {
+			a()
+		}
+		return
+	}
 	if r.Method == "GET" {
 		b, err := json.MarshalIndent(g, "", "  ")
 		if err != nil {
@@ -242,3 +254,14 @@ func (b *Box) Textarea(id string) *Element {
 func (b *Box) Text(id string) *Element {
 	return b.Element(id, TEXT)
 }
+
+func (b *Box) Button(id string) *Element {
+	return b.Element(id, BUTTON)
+}
+
+/*type Button struct {
+}
+
+func (b *Button) Action(f func()) {
+
+}*/

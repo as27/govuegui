@@ -25,23 +25,34 @@ func main() {
 	inputBox.Input("x").Set(0)
 	inputBox.Input("y").Set(0)
 	inputBox.Input("n").Set(0)
-	resultBox := gui.Form("Result").Box("Result")
+	resultBox := gui.Form("Input").Box("Result")
 
 	a := 123
 	b := 200
 	c := a + b
 	gui.Form("Sum").Box("Numbers").Input("A").Set(&a)
 	gui.Form("Sum").Box("Numbers").Input("B").Set(&b)
-	gui.Form("Sum").Box("Numbers").Input("A + B").Set(c)
-	gui.Form("Sum").Box("Numbers").Text("Result").Set(c)
+	gui.Form("Sum").Box("Numbers").Input("A + B").Set(&c)
+	gui.Form("Sum").Box("Numbers").Text("Result").Set(&c)
+	gui.Form("Sum").Box("Numbers").Button("A Plus 1").Action(
+		func() {
+			a++
+			c = a + b
+			fmt.Println("A++ called")
+		})
+	gui.Form("Sum").Box("Numbers").Button("B Plus 1").Action(
+		func() {
+			b++
+			c = a + b
+			fmt.Println("A++ called")
+		})
 	gui.CB = func() {
 		//a = gui.Form("Sum").Box("Numbers").Input("A").Get().(int)
 		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a)
 		fmt.Println("a wird gesetzt: ", a)
-		d := gui.Form("Sum").Box("Numbers").Input("A").Get()
-		fmt.Println("d wird gesetzt mit Wert a: ", d)
-		fmt.Printf("d:%T - a:%T", d, a)
-		gui.Form("Sum").Box("Numbers").Input("A + B").Set(a + b)
+		//d := gui.Form("Sum").Box("Numbers").Input("A").Get()
+		c = a + b
+		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a + b)
 		n := inputBox.Input("n")
 		resultBox.Clear()
 		for i := 1; i <= n.Get().(int); i++ {

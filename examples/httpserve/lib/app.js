@@ -11,6 +11,27 @@ const gvgtext = Vue.component('gvgtext',{
     template: `<div class="text">{{data.Data.data[element.id]}}</div>`,
     props: ['data', 'element']
 })
+const gvgbutton = Vue.component('gvgbutton',{
+    template: `<button class="button is-primary" @click="callAction">{{element.id}}</button>`,
+    props: ['data', 'element'],
+    methods:{
+        callAction: function(){
+            this.$http.get(PathPrefix+"/data?action="+this.element.id).then(
+                res => {
+                    console.log("action ready");
+                    this.$http.get(PathPrefix + "/data").then(
+                        (res) => {
+                            app.data = res.body;
+                            for (var i = 0; i < app.data.Forms.length; i++) {
+                                app.forms[app.data.Forms[i].id] = app.data.Forms[i];
+                            }
+                        }
+                    );
+                },res=>{console.log("There is an error")}
+            );
+        }
+    }
+})
 const gvgelement = Vue.component('gvgelement',{
     template: `<div class="field"><label class="label">{{element.id}}</label>
     <p class="control"> 
@@ -20,7 +41,8 @@ const gvgelement = Vue.component('gvgelement',{
     components: {
         GVGINPUT: gvginput,
         GVGTEXTAREA: gvgtextarea,
-        GVGTEXT: gvgtext
+        GVGTEXT: gvgtext,
+        GVGBUTTON: gvgbutton
     },
     props: {
         data: Object,

@@ -9,6 +9,7 @@ import (
 
 var str = "myString"
 var myint = 123456
+var myfunc = func() {}
 var testCases = []struct {
 	key   string
 	dType dataType
@@ -49,6 +50,11 @@ var testCases = []struct {
 		INTPOINTER,
 		&myint,
 	},
+	/*{
+		"pointer to func",
+		FUNCPOINTER,
+		&myfunc,
+	},*/
 	{
 		"element options",
 		OPTION,

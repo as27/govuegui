@@ -6,6 +6,7 @@ type Element struct {
 	gui       *Gui
 	InputType ElementType `json:"type"`
 	Options   []*Option   `json:"options"`
+	CB        *func()     `json:"-"`
 }
 
 // ID returns the id of the element
@@ -32,4 +33,9 @@ func (e *Element) Set(i interface{}) error {
 
 func (e *Element) Get() interface{} {
 	return e.gui.Data.Get(e.ID())
+}
+
+func (e *Element) Action(f func()) *Element {
+	e.gui.Actions[e.ID()] = f
+	return e
 }
