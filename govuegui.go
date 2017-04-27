@@ -111,6 +111,14 @@ func (g *Gui) Form(id string) *Form {
 
 // ServeHTTP implements the http handler interface
 func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
+	wshub.addConnection(conn)
+
 	q := r.URL.Query()
 	action := q.Get("action")
 	if action != "" {
