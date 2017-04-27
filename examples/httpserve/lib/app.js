@@ -12,13 +12,12 @@ const gvgtext = Vue.component('gvgtext',{
     props: ['data', 'element']
 })
 const gvgbutton = Vue.component('gvgbutton',{
-    template: `<button class="button is-primary" @click="callAction">{{element.id}}</button>`,
+    template: `<div><br><button class="button is-primary" @click="callAction">{{element.id}}</button><br></div>`,
     props: ['data', 'element'],
     methods:{
         callAction: function(){
             this.$http.get(PathPrefix+"/data?action="+this.element.id).then(
                 res => {
-                    console.log("action ready");
                     this.$http.get(PathPrefix + "/data").then(
                         (res) => {
                             app.data = res.body;
@@ -33,16 +32,24 @@ const gvgbutton = Vue.component('gvgbutton',{
     }
 })
 const gvgelement = Vue.component('gvgelement',{
-    template: `<div class="field"><label class="label">{{element.id}}</label>
-    <p class="control"> 
+    template: `<div class="field"><label v-if="renderLabel" class="label">{{element.id}}</label>
+    
     <component :is=element.type :element=element :data=data v-model="data.Data.data[element.id]"></component>
-    </p>
+    
     </div>`,
     components: {
         GVGINPUT: gvginput,
         GVGTEXTAREA: gvgtextarea,
         GVGTEXT: gvgtext,
         GVGBUTTON: gvgbutton
+    },
+    computed: {
+        renderLabel: function(){
+            if (this.element.type != 'GVGBUTTON'){
+                return true;
+            }
+            return false;
+        }
     },
     props: {
         data: Object,
