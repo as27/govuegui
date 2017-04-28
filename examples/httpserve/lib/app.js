@@ -1,4 +1,6 @@
 const PathPrefix = "/govuegui";
+const Server = "localhost:2700"
+
 const gvginput = Vue.component('gvginput',{
     template: `<input class="input" type="text" v-model="data.Data.data[element.id]">`,
     props: ['data', 'element']
@@ -198,10 +200,19 @@ const router = new VueRouter({
     routes: routes
 });
 
+var socket = new WebSocket("ws://"+Server+PathPrefix+"/data/ws");
+socket.onmessage = function(evt){
+    var newData = JSON.parse(evt.data);
+    //console.log(evt.data); //TODO: Remove in production
+    console.log(evt);
+    app.data = newData;
+};
+
 const app = new Vue({
     router,
     data: {
         data: {},
+        dataNew: {},
         forms: {}
     },
     methods: {

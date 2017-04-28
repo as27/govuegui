@@ -2,18 +2,11 @@ package govuegui
 
 import "github.com/gorilla/websocket"
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-}
-
-var wshub = newHub()
-
 type hub struct {
 	connections map[*websocket.Conn]*websocket.Conn
 }
 
-func newHub() *hub {
+func newWebsocketHub() *hub {
 	return &hub{
 		connections: make(map[*websocket.Conn]*websocket.Conn),
 	}
@@ -21,6 +14,10 @@ func newHub() *hub {
 
 func (h *hub) addConnection(c *websocket.Conn) {
 	h.connections[c] = c
+}
+
+func (h *hub) removeConnection(c *websocket.Conn) {
+	delete(h.connections, c)
 }
 
 func (h *hub) writeJSON(v interface{}) error {

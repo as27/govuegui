@@ -21,9 +21,13 @@ package govuegui
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 // ElementType defines the
@@ -76,6 +80,7 @@ func getOption(opt string, opts []*Option) *Option {
 type Gui struct {
 	Forms   []*Form
 	Data    *Data
+	hub     *hub
 	Actions map[string]func() `json:"-"`
 	CB      func()            `json:"-"`
 }
@@ -83,6 +88,7 @@ type Gui struct {
 // NewGui returns a pointer to a new instance of a gui
 func NewGui() *Gui {
 	return &Gui{
+		hub:     newWebsocketHub(),
 		Data:    NewStorage(),
 		Actions: make(map[string]func()),
 	}
@@ -111,46 +117,80 @@ func (g *Gui) Form(id string) *Form {
 
 // ServeHTTP implements the http handler interface
 func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	conn, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	defer conn.Close()
-	wshub.addConnection(conn)
+	router := mux.NewRouter()
+	//r.HandleFunc(PathPrefix+"/", rootHandler)
+	prefix := PathPrefix + "/data"
+	router.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		action := q.Get("action")
+		if action != "" {
+			a, ok := g.Actions[action]
+			if ok {
+				a()
+			}
+			return
+		}
+		if r.Method == "GET" {
+			b, err := g.Marshal()
+			if err != nil {
+				log.Println(err)
+			}
+			w.Write(b)
+		}
+		if r.Method == "POST" {
+			rbody, err := ioutil.ReadAll(r.Body)
+			if err != nil {
+				log.Println(err)
+			}
+			newG := NewGui()
+			err = json.Unmarshal(rbody, newG)
+			if err != nil {
+				log.Println(err)
+			}
+			err = g.Data.SetData(newG.Data)
+			if err != nil {
+				log.Println(err)
+			}
+			g.CB()
+		}
+	})
+	router.HandleFunc(prefix+"/ws", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("WS HandleFunc called!")
+		upgrader := websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+		}
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer conn.Close()
+		defer g.hub.removeConnection(conn)
+		g.hub.addConnection(conn)
+		for {
+			_, message, err := conn.ReadMessage()
+			if err != nil {
+				fmt.Println("gui serve ws:", err)
+			}
+			fmt.Println(message)
+		}
+	})
+	router.ServeHTTP(w, r)
 
-	q := r.URL.Query()
-	action := q.Get("action")
-	if action != "" {
-		a, ok := g.Actions[action]
-		if ok {
-			a()
-		}
-		return
-	}
-	if r.Method == "GET" {
-		b, err := json.MarshalIndent(g, "", "  ")
-		if err != nil {
-			log.Println(err)
-		}
-		w.Write(b)
-	}
-	if r.Method == "POST" {
-		rbody, err := ioutil.ReadAll(r.Body)
-		if err != nil {
-			log.Println(err)
-		}
-		newG := NewGui()
-		err = json.Unmarshal(rbody, newG)
-		if err != nil {
-			log.Println(err)
-		}
-		err = g.Data.SetData(newG.Data)
-		if err != nil {
-			log.Println(err)
-		}
-		g.CB()
-	}
+}
+
+func (g *Gui) Marshal() ([]byte, error) {
+	return json.MarshalIndent(g, "", "  ")
+}
+
+func (g *Gui) Update() error {
+	/*b, err := g.Marshal()
+	if err != nil {
+		return err
+	}*/
+	err := g.hub.writeJSON(g)
+	return err
 }
 
 // Form wrapps one ore more Boxes

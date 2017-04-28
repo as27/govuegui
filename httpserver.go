@@ -36,6 +36,7 @@ func NewRouter(g *Gui) *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc(PathPrefix+"/", rootHandler)
 	r.Handle(PathPrefix+"/data", g)
+	r.Handle(PathPrefix+"/data/ws", g)
 	r.HandleFunc(PathPrefix+"/lib/vue.min.js", vuejsdev.Handler)
 	r.HandleFunc(PathPrefix+"/lib/vue-router.min.js", vueroutermin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
