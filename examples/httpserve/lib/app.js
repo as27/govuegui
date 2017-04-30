@@ -14,7 +14,7 @@ const gvgtext = Vue.component('gvgtext',{
     props: ['data', 'element']
 })
 const gvgbutton = Vue.component('gvgbutton',{
-    template: `<div><br><button class="button is-primary" @click="callAction">{{element.id}}</button><br></div>`,
+    template: `<div><br><button class="button is-primary" @click="callAction">{{element.label}}</button><br></div>`,
     props: ['data', 'element'],
     methods:{
         callAction: function(){
@@ -34,7 +34,7 @@ const gvgbutton = Vue.component('gvgbutton',{
     }
 })
 const gvgelement = Vue.component('gvgelement',{
-    template: `<div class="field"><label v-if="renderLabel" class="label">{{element.id}}</label>
+    template: `<div class="field"><label v-if="renderLabel" class="label">{{element.label}}</label>
     
     <component :is=element.type :element=element :data=data v-model="data.Data.data[element.id]"></component>
     
@@ -58,7 +58,10 @@ const gvgelement = Vue.component('gvgelement',{
         element: {
             type: Object,
             default: function(){
-                return {id:""}
+                return {
+                    id:"",
+                    label:""
+                }
             }
         }
     }

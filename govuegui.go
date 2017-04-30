@@ -283,6 +283,7 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 	if el == nil {
 		el = &Element{
 			Key:       id,
+			Label:     id,
 			gui:       b.gui,
 			InputType: inputType,
 		}

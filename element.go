@@ -3,15 +3,19 @@ package govuegui
 // Element represents a simple html element
 type Element struct {
 	Key       string `json:"id"`
+	Label     string `json:"label"`
 	gui       *Gui
 	InputType ElementType `json:"type"`
 	Options   []*Option   `json:"options"`
-	CB        *func()     `json:"-"`
 }
 
 // ID returns the id of the element
 func (e *Element) ID() string {
 	return e.Key
+}
+
+func (e *Element) SetLabel(l string) {
+	e.Label = l
 }
 
 // Option sets the given values as option
