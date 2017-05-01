@@ -26,6 +26,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/as27/govuegui/storage"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
@@ -79,7 +80,7 @@ func getOption(opt string, opts []*Option) *Option {
 // Gui groups different forms together.
 type Gui struct {
 	Forms   []*Form
-	Data    *Data
+	Data    *storage.Data
 	hub     *hub
 	Actions map[string]func() `json:"-"`
 	CB      func()            `json:"-"`
@@ -89,7 +90,7 @@ type Gui struct {
 func NewGui() *Gui {
 	return &Gui{
 		hub:     newWebsocketHub(),
-		Data:    NewStorage(),
+		Data:    storage.New(),
 		Actions: make(map[string]func()),
 	}
 }
