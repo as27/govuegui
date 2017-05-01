@@ -35,12 +35,18 @@ var ErrTypeNotSupported = errors.New("Type is not supported!")
 var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 
 // Data is the type were everything is stored and which can be used for
-// Marshaling to json.
+// Marshaling to json. Every entry uses a unique key, which is a string.
 type Data struct {
-	Values         map[string]dataType    `json:"values"`
-	Data           map[string]interface{} `json:"data"`
+	// Values is a map which know the internal datatype every key value
+	// pair is exported here.
+	Values map[string]dataType `json:"values"`
+	// Data conatains all the data, which can be exported
+	Data map[string]interface{} `json:"data"`
+	// uneportedData contains all the types, which can not be marshaled
+	// into json format.
 	unexportedData map[string]interface{}
-	cache          map[string]interface{}
+	// cache is used, when modifiing a value of pointer
+	cache map[string]interface{}
 }
 
 // NewStorage returns a pointer to a new empty storage
