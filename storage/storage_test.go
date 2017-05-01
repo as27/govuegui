@@ -1,4 +1,4 @@
-package govuegui
+package storage
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ var myint = 123456
 var myfunc = func() {}
 var testCases = []struct {
 	key   string
-	dType dataType
+	dType DataType
 	value interface{}
 }{
 	{
@@ -72,15 +72,30 @@ var testCases = []struct {
 }
 
 func ExampleData_Set() {
-	store := NewStorage()
+	store := New()
 	store.Set("myString", "this is my string")
 	store.Set("myInt", 1234)
 	i := store.Get("myInt").(int)
 	fmt.Println(i * 2)
 	// Output: 2468
 }
+
+func TestGetType(t *testing.T) {
+	data := New()
+	for _, tc := range testCases {
+		data.Set(tc.key, tc.value)
+		dt, _ := data.GetType(tc.key)
+		if dt != tc.dType {
+			t.Errorf("GetType() returns wrong type!\nInput: %s\nGot: %v Exp: %v",
+				tc.key,
+				data.Values[tc.key],
+				tc.dType,
+			)
+		}
+	}
+}
 func TestSet(t *testing.T) {
-	data := NewStorage()
+	data := New()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		if data.Values[tc.key] != tc.dType {
@@ -91,11 +106,10 @@ func TestSet(t *testing.T) {
 			)
 		}
 	}
-
 }
 
 func TestGet(t *testing.T) {
-	data := NewStorage()
+	data := New()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		val := data.Get(tc.key)
@@ -110,7 +124,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestErrors(t *testing.T) {
-	data := NewStorage()
+	data := New()
 	type notSupported int
 	a := notSupported(123)
 	err := data.Set("notSupported", a)
@@ -128,7 +142,7 @@ func TestErrors(t *testing.T) {
 }
 
 func TestMarshal(t *testing.T) {
-	data := NewStorage()
+	data := New()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 	}
@@ -148,7 +162,7 @@ func TestMarshal(t *testing.T) {
 }
 
 func TestRemove(t *testing.T) {
-	data := NewStorage()
+	data := New()
 	for _, tc := range testCases {
 		data.Set(tc.key, tc.value)
 		val, err := data.GetWithErrors(tc.key)

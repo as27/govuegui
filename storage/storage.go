@@ -1,4 +1,8 @@
-package govuegui
+/*
+Package storage defines a object, which can be exported and imported
+as a JSON object. The data is stored with the type information, so inside
+Go the type logic can be used. */
+package storage
 
 import (
 	"encoding/json"
@@ -7,10 +11,16 @@ import (
 	"strconv"
 )
 
-type dataType string
+type DataType string
+
+// Option holds the one option of a element
+type Option struct {
+	Option string
+	Values []string
+}
 
 const (
-	STRING        dataType = "STRING"
+	STRING        DataType = "STRING"
 	STRINGSLICE            = "STRINGARRAY"
 	STRINGPOINTER          = "STRINGPOINTER"
 	INT                    = "INT"
@@ -20,7 +30,8 @@ const (
 	FUNCPOINTER            = "FUNCPOINTER"
 )
 
-func isExportedType(d dataType) bool {
+// isExportedType defines, which types are exportet to JS
+func isExportedType(d DataType) bool {
 	if d == FUNCPOINTER {
 		return false
 	}
@@ -37,9 +48,9 @@ var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 // Data is the type were everything is stored and which can be used for
 // Marshaling to json. Every entry uses a unique key, which is a string.
 type Data struct {
-	// Values is a map which know the internal datatype every key value
+	// Values is a map which know the internal DataType every key value
 	// pair is exported here.
-	Values map[string]dataType `json:"values"`
+	Values map[string]DataType `json:"values"`
 	// Data conatains all the data, which can be exported
 	Data map[string]interface{} `json:"data"`
 	// uneportedData contains all the types, which can not be marshaled
@@ -50,16 +61,17 @@ type Data struct {
 }
 
 // NewStorage returns a pointer to a new empty storage
-func NewStorage() *Data {
+func New() *Data {
 	return &Data{
-		Values:         make(map[string]dataType),
+		Values:         make(map[string]DataType),
 		Data:           make(map[string]interface{}),
 		unexportedData: make(map[string]interface{}),
 		cache:          make(map[string]interface{}),
 	}
 }
 
-// Set is used to set the data of a type.
+// Set is used to set the data of a type. Everytime a new value is set
+// the type of the newest type is used.
 func (d *Data) Set(key string, i interface{}) error {
 	switch i.(type) {
 	case string:
@@ -98,6 +110,9 @@ func (d *Data) Set(key string, i interface{}) error {
 //    i := store.Get("myInt").(int)
 // This usage is dangerous, because it can cause a runtime error,
 // when the found value is another type then expected.
+// But it enables a very simple API, so if you use it be sure that
+// the type you are getting is really fix
+// To be sure at this point the function GetWithErrors() should be used.
 func (d *Data) Get(key string) interface{} {
 	i, _ := d.GetWithErrors(key)
 	return i
@@ -114,6 +129,17 @@ func (d *Data) GetWithErrors(key string) (interface{}, error) {
 		return d.unexportedData[key], nil
 	}
 	return d.Data[key], nil
+}
+
+// GetType returns the DataType of a key. If there is no value availiable
+// with the key an error is returned.
+func (d *Data) GetType(key string) (DataType, error) {
+	var err error
+	dt, ok := d.Values[key]
+	if !ok {
+		err = ErrKeyNotFound
+	}
+	return dt, err
 }
 
 // Remove just deletes the key from the storage. True is returned
@@ -134,7 +160,10 @@ func (d *Data) Unmarshal(b []byte) error {
 	return nil
 }
 
-// SetData a slice of bytes into the data
+// SetData takes a storage and sets all the values. This also works for
+// all the pointers. That function is used, when the storage is
+// unmarshaled input.
+// Just exported values are set new.
 func (d *Data) SetData(data *Data) error {
 	var err error
 	for k, dType := range d.Values {
