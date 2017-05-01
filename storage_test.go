@@ -50,11 +50,11 @@ var testCases = []struct {
 		INTPOINTER,
 		&myint,
 	},
-	/*{
+	{
 		"pointer to func",
 		FUNCPOINTER,
 		&myfunc,
-	},*/
+	},
 	{
 		"element options",
 		OPTION,

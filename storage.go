@@ -20,6 +20,13 @@ const (
 	FUNCPOINTER            = "FUNCPOINTER"
 )
 
+func isExportedType(d dataType) bool {
+	if d == FUNCPOINTER {
+		return false
+	}
+	return true
+}
+
 // ErrTypeNotSupported is returned by Set() when the given type could
 // not be stored.
 var ErrTypeNotSupported = errors.New("Type is not supported!")
@@ -30,17 +37,19 @@ var ErrKeyNotFound = errors.New("The given key was not found inside storage!")
 // Data is the type were everything is stored and which can be used for
 // Marshaling to json.
 type Data struct {
-	Values map[string]dataType    `json:"values"`
-	Data   map[string]interface{} `json:"data"`
-	cache  map[string]interface{}
+	Values         map[string]dataType    `json:"values"`
+	Data           map[string]interface{} `json:"data"`
+	unexportedData map[string]interface{}
+	cache          map[string]interface{}
 }
 
 // NewStorage returns a pointer to a new empty storage
 func NewStorage() *Data {
 	return &Data{
-		Values: make(map[string]dataType),
-		Data:   make(map[string]interface{}),
-		cache:  make(map[string]interface{}),
+		Values:         make(map[string]dataType),
+		Data:           make(map[string]interface{}),
+		unexportedData: make(map[string]interface{}),
+		cache:          make(map[string]interface{}),
 	}
 }
 
@@ -66,8 +75,13 @@ func (d *Data) Set(key string, i interface{}) error {
 	default:
 		return ErrTypeNotSupported
 	}
-	d.Data[key] = i
+	if d.isExportedData(key) {
+		d.Data[key] = i
+	} else {
+		d.unexportedData[key] = i
+	}
 	d.cache[key] = i
+
 	return nil
 }
 
@@ -89,6 +103,9 @@ func (d *Data) GetWithErrors(key string) (interface{}, error) {
 	_, ok := d.Values[key]
 	if !ok {
 		return nil, ErrKeyNotFound
+	}
+	if !d.isExportedData(key) {
+		return d.unexportedData[key], nil
 	}
 	return d.Data[key], nil
 }
@@ -134,7 +151,7 @@ func (d *Data) SetData(data *Data) error {
 			d.Data[k] = ip
 		case FUNCPOINTER:
 			fp := d.cache[k].(*func())
-			*fp = data.Data[k].(func())
+			*fp = data.unexportedData[k].(func())
 			d.Data[k] = fp
 		case FLOAT64:
 			var v float64
@@ -159,6 +176,10 @@ func interfaceToFloat(i interface{}) (float64, error) {
 	default:
 		return 0, fmt.Errorf("interfaceToFloat: %T not expected Type", i)
 	}
+}
+
+func (d *Data) isExportedData(key string) bool {
+	return isExportedType(d.Values[key])
 }
 
 // Marshal the storage into json format
