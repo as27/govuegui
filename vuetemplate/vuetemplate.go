@@ -19,6 +19,7 @@ const (
 	CONSTANT JSType = iota
 	VARIABLE
 	LETSTMT
+	FUNCTION
 )
 
 // JSElement represents the different variable declarations
@@ -41,6 +42,8 @@ func NewJSElement(t JSType, name, value string) JSElement {
 func (jse JSElement) String() string {
 	var def = ""
 	switch jse.JSType {
+	default:
+		def = "const"
 	case CONSTANT:
 		def = "const"
 	case VARIABLE:
@@ -55,7 +58,9 @@ func (jse JSElement) String() string {
 	)
 }
 
-// WriteTo implements the io.WriterTo interface
+// WriteTo implements the io.WriterTo interface by wrapping the String()
+// function. WriteTo makes it easier to serve the data inside of a http
+// handler.
 func (jse JSElement) WriteTo(w io.Writer) (int64, error) {
 	b := bytes.NewBufferString(jse.String())
 	n, err := w.Write(b.Bytes())
