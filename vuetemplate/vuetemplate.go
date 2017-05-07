@@ -1,12 +1,24 @@
+/*Package vuetemplate allows to serve vue.js apps over a go api.
+The abstraction works over different elements:
+ * JSType defines the different statements, which are used inside JS
+ * JSElement is a full JavaScript statement for example `var v1 = "val";`
+ * Vue is the definition of the vue object
+ * Component defines a vue component
+*/
 package vuetemplate
 
-import "fmt"
+import (
+	"bytes"
+	"fmt"
+	"io"
+)
 
 type JSType int
 
 const (
 	CONSTANT JSType = iota
 	VARIABLE
+	LETSTMT
 )
 
 // JSElement represents the different variable declarations
@@ -17,6 +29,14 @@ type JSElement struct {
 	Value   string
 }
 
+func NewJSElement(t JSType, name, value string) JSElement {
+	return JSElement{
+		JSType:  t,
+		VarName: name,
+		Value:   value,
+	}
+}
+
 // String creates a JS line for the element
 func (jse JSElement) String() string {
 	var def = ""
@@ -25,6 +45,8 @@ func (jse JSElement) String() string {
 		def = "const"
 	case VARIABLE:
 		def = "var"
+	case LETSTMT:
+		def = "let"
 	}
 	return fmt.Sprintf("%s %s = \"%s\";",
 		def,
@@ -34,25 +56,18 @@ func (jse JSElement) String() string {
 }
 
 // WriteTo implements the io.WriterTo interface
-func (jse JSElement) WriteTo(w io.Writer) (int64, error){
+func (jse JSElement) WriteTo(w io.Writer) (int64, error) {
 	b := bytes.NewBufferString(jse.String())
-	return w.Write(b.Bytes())
+	n, err := w.Write(b.Bytes())
+	return int64(n), err
+}
 
 type Vue struct {
-	El       string
-	Data     string
-	Computed string
-	Methods  string
+	JSElement
+	Options map[string]string
 }
 
 type Component struct {
 	Vue
 	Name string
 }
-
-func v() string {
-	fmt.Println()
-	return "a"
-}
-
-var a = v()

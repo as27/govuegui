@@ -6,6 +6,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestVue(t *testing.T) {
+	v := Vue{
+		VarName: "app",
+	}
+	assert.Equal(t, "ab", v.String())
+}
 func TestJSElement(t *testing.T) {
 	testCases := []struct {
 		Got    JSElement
@@ -26,6 +32,14 @@ func TestJSElement(t *testing.T) {
 				"val1",
 			},
 			Expect: `var var1 = "val1";`,
+		},
+		{
+			Got: JSElement{
+				LETSTMT,
+				"var1",
+				"val1",
+			},
+			Expect: `let var1 = "val1";`,
 		},
 	}
 	for _, tc := range testCases {
