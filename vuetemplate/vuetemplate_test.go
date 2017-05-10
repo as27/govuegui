@@ -1,6 +1,7 @@
 package vuetemplate
 
 import (
+	"bytes"
 	"strings"
 	"testing"
 
@@ -8,8 +9,24 @@ import (
 )
 
 func TestVue(t *testing.T) {
-	// v := Vue{}
-	// assert.Equal(t, "ab", v.String())
+	v := Vue{}
+	v.Data = `{
+		val1: "value",
+		int1: 1
+	}`
+	v.Template = `<div>abc</div>`
+	expect := `{
+		template: ` + "`" + `<div>abc</div>` + "`" + `, 
+		data: function(){
+			return {
+				val1: "value",
+				int1: 1
+			}
+		}
+	}`
+	b := &bytes.Buffer{}
+	v.WriteTo(b)
+	assert.Equal(t, clearString(expect), clearString(b.String()))
 }
 func TestJSElement(t *testing.T) {
 	testCases := []struct {
@@ -48,16 +65,20 @@ func TestJSElement(t *testing.T) {
 			},
 			Expect: `const var1 = function() {
 				return "a";
-			}`,
+			};`,
 		},
 	}
 	for _, tc := range testCases {
 		jse := tc.Got
-		assert.Equal(t, tc.Expect, jse.String())
+		assert.Equal(t, clearString(tc.Expect), clearString(jse.String()))
 	}
 }
 func clearString(s string) string {
-	return strings.Trim(s, "\n\t")
+	r := strings.NewReplacer(
+		"\n", "",
+		"\t", "",
+		"  ", "")
+	return r.Replace(s)
 }
 func TestComponent(t *testing.T) {
 }

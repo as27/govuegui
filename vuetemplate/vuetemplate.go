@@ -11,6 +11,8 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"strings"
+	"text/template"
 )
 
 type JSType int
@@ -50,6 +52,13 @@ func (jse JSElement) String() string {
 		def = "var"
 	case LETSTMT:
 		def = "let"
+	case FUNCTION:
+		def = "const"
+		return fmt.Sprintf("%s %s = function() {\n%s;\n};",
+			def,
+			jse.VarName,
+			jse.Value,
+		)
 	}
 	return fmt.Sprintf("%s %s = \"%s\";",
 		def,
@@ -67,10 +76,32 @@ func (jse JSElement) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
-type Vue struct {
-	JSElement
-	Options map[string]string
+var helperFunc = template.FuncMap{
+	"function":   func(s string) string { return fmt.Sprintf("function(){\nreturn %s\n}", s) },
+	"backquotes": func(s string) string { return fmt.Sprintf("`%s`", s) },
 }
+
+type Vue struct {
+	Template string
+	Data     string
+	Props    string
+	Computed string
+	Methods  string
+	Watch    string
+}
+
+func (v *Vue) WriteTo(w io.Writer) (int64, error) {
+	b := &bytes.Buffer{}
+	t := template.Must(template.New("vue").Funcs(helperFunc).Parse(vueTemplate))
+	b.Write([]byte("{"))
+	t.Execute(b, v)
+	s := strings.TrimRight(b.String(), " ,") + "}"
+	n, err := w.Write([]byte(s))
+	return int64(n), err
+}
+
+const vueTemplate = `{{with .Template}}template: {{backquotes .}},{{end}}
+	 {{with .Data}}data: {{function .}},{{end}}`
 
 type Component struct {
 	Vue
