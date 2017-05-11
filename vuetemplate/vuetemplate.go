@@ -95,15 +95,34 @@ func (v *Vue) WriteTo(w io.Writer) (int64, error) {
 	t := template.Must(template.New("vue").Funcs(helperFunc).Parse(vueTemplate))
 	b.Write([]byte("{"))
 	t.Execute(b, v)
-	s := strings.TrimRight(b.String(), " ,") + "}"
+	s := strings.TrimRight(b.String(), "\t\n ,") + "}"
 	n, err := w.Write([]byte(s))
 	return int64(n), err
 }
 
 const vueTemplate = `{{with .Template}}template: {{backquotes .}},{{end}}
-	 {{with .Data}}data: {{function .}},{{end}}`
+	 {{with .Data}}data: {{function .}},{{end}}
+	 {{with .Props}}props: {{.}},{{end}}
+	 {{with .Computed}}computed: {{.}},{{end}}
+	 {{with .Methods}}methods: {{.}},{{end}}
+	 {{with .Watch}}watch: {{.}},{{end}}`
 
 type Component struct {
 	Vue
 	Name string
+}
+
+func NewComponent(name string) *Component {
+	return &Component{
+		Name: name,
+	}
+}
+
+func (c *Component) WriteTo(w io.Writer) (int64, error) {
+	s := fmt.Sprintf("const %s = Vue.component('%s', ", c.Name, c.Name)
+	b := bytes.NewBufferString(s)
+	c.Vue.WriteTo(b)
+	b.Write([]byte(");"))
+	n, err := w.Write(b.Bytes())
+	return int64(n), err
 }
