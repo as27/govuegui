@@ -22,6 +22,9 @@ const (
 	VARIABLE
 	LETSTMT
 	FUNCTION
+	VUECOMPONENT
+	VUEAPP
+	VUEROUTER
 )
 
 // JSElement represents the different variable declarations
@@ -53,9 +56,13 @@ func (jse JSElement) String() string {
 	case LETSTMT:
 		def = "let"
 	case FUNCTION:
-		def = "const"
-		return fmt.Sprintf("%s %s = function() {\n%s;\n};",
-			def,
+		return fmt.Sprintf("const %s = function() {\n%s;\n};",
+			jse.VarName,
+			jse.Value,
+		)
+	case VUECOMPONENT:
+		return fmt.Sprintf("const %s = Vue.component('%s', %s)",
+			jse.VarName,
 			jse.VarName,
 			jse.Value,
 		)
@@ -81,13 +88,19 @@ var helperFunc = template.FuncMap{
 	"backquotes": func(s string) string { return fmt.Sprintf("`%s`", s) },
 }
 
+// Vue defines all possible JS objects used with vue.js. There are not only
+// the core elements availiable. Route and component properties are added here,
+// too.
 type Vue struct {
-	Template string
+	Template string // vue template also used inside components
 	Data     string
-	Props    string
+	Props    string // for handling values inside components
+	Children string // used inside components
 	Computed string
 	Methods  string
 	Watch    string
+	Path     string // just used inside routes
+
 }
 
 func (v *Vue) WriteTo(w io.Writer) (int64, error) {
@@ -103,9 +116,11 @@ func (v *Vue) WriteTo(w io.Writer) (int64, error) {
 const vueTemplate = `{{with .Template}}template: {{backquotes .}},{{end}}
 	 {{with .Data}}data: {{function .}},{{end}}
 	 {{with .Props}}props: {{.}},{{end}}
+	 {{with .Children}}children: {{.}},{{end}}
 	 {{with .Computed}}computed: {{.}},{{end}}
 	 {{with .Methods}}methods: {{.}},{{end}}
-	 {{with .Watch}}watch: {{.}},{{end}}`
+	 {{with .Watch}}watch: {{.}},{{end}}
+	 {{with .Path}}path: {{.}},{{end}}`
 
 type Component struct {
 	Vue
@@ -119,6 +134,7 @@ func NewComponent(name string) *Component {
 }
 
 func (c *Component) WriteTo(w io.Writer) (int64, error) {
+	//	jse := NewJSElement()
 	s := fmt.Sprintf("const %s = Vue.component('%s', ", c.Name, c.Name)
 	b := bytes.NewBufferString(s)
 	c.Vue.WriteTo(b)
