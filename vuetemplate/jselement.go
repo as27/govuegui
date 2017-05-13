@@ -87,7 +87,7 @@ func (jse *JSElement) WriteTo(w io.Writer) (int64, error) {
 // Write implements the io.Writer. The write method writes everything into
 // the jse.Value
 func (jse *JSElement) Write(p []byte) (n int, err error) {
-	b := &bytes.Buffer{}
+	b := bytes.NewBufferString(jse.Value)
 	n, err = b.Write(p)
 	jse.Value = b.String()
 	return n, err

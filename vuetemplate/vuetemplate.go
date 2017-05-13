@@ -18,6 +18,7 @@ import (
 var helperFunc = template.FuncMap{
 	"function":   func(s string) string { return fmt.Sprintf("function(){\nreturn %s\n}", s) },
 	"backquotes": func(s string) string { return fmt.Sprintf("`%s`", s) },
+	"quotes":     func(s string) string { return fmt.Sprintf("'%s'", s) },
 }
 
 // Vue defines all possible JS objects used with vue.js. There are not only
@@ -32,7 +33,10 @@ type Vue struct {
 	Methods  string
 	Watch    string
 	Path     string // just used inside routes
+}
 
+func NewVue() Vue {
+	return Vue{}
 }
 
 func (v *Vue) WriteTo(w io.Writer) (int64, error) {
@@ -45,14 +49,14 @@ func (v *Vue) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
-const vueTemplate = `{{with .Template}}template: {{backquotes .}},{{end}}
-	 {{with .Data}}data: {{function .}},{{end}}
-	 {{with .Props}}props: {{.}},{{end}}
-	 {{with .Children}}children: {{.}},{{end}}
-	 {{with .Computed}}computed: {{.}},{{end}}
-	 {{with .Methods}}methods: {{.}},{{end}}
-	 {{with .Watch}}watch: {{.}},{{end}}
-	 {{with .Path}}path: {{.}},{{end}}`
+const vueTemplate = `{{with .Template}}template: {{backquotes .}}, {{end}}
+{{with .Data}}data: {{function .}}, {{end}}
+{{with .Props}}props: {{.}}, {{end}}
+{{with .Children}}children: {{.}}, {{end}}
+{{with .Computed}}computed: {{.}}, {{end}}
+{{with .Methods}}methods: {{.}}, {{end}}
+{{with .Watch}}watch: {{.}}, {{end}}
+{{with .Path}}path: {{quotes .}}, {{end}}`
 
 // Component is used for vuejs components
 type Component struct {
@@ -81,22 +85,27 @@ func (c *Component) WriteTo(w io.Writer) (int64, error) {
 }
 
 type Router struct {
-	Vue
-	Name string
+	Routes []Vue
+	Name   string
 }
 
-func NewRouter(name string) *Router {
+func NewRouter(name string, routes []Vue) *Router {
 	return &Router{
-		Name: name,
+		Routes: routes,
+		Name:   name,
 	}
 }
 
 func (r *Router) WriteTo(w io.Writer) (int64, error) {
 	jse := NewJSElement(VUEROUTER, r.Name, "")
-	n, err := r.Vue.WriteTo(jse)
-	if err != nil {
-		return int64(n), err
+	jse.Write([]byte("{router: ["))
+	for _, v := range r.Routes {
+		n, err := v.WriteTo(jse)
+		if err != nil {
+			return int64(n), err
+		}
 	}
-	n, err = jse.WriteTo(w)
+	jse.Write([]byte("]}"))
+	n, err := jse.WriteTo(w)
 	return int64(n), err
 }

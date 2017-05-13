@@ -18,12 +18,30 @@ func TestCompontent(t *testing.T) {
 	assert.Equal(t, clearString(expect), clearString(b.String()))
 }
 
+func TestRouter(t *testing.T) {
+	v := NewVue()
+	v.Path = "/"
+	routes := []Vue{v}
+	r := NewRouter("router", routes)
+	b := &bytes.Buffer{}
+	r.WriteTo(b)
+	expect := `const router = VueRouter({
+		router: [
+			{
+				path: '/'
+			}
+			]
+			});`
+	assert.Equal(t, clearString(expect), clearString(b.String()))
+}
+
 func TestVue(t *testing.T) {
 	v := Vue{}
 	v.Data = `{
 		val1: "value",
 		int1: 1
 	}`
+	v.Path = "/abc/"
 	v.Template = `<div>abc</div>`
 	expect := `{
 		template: ` + "`" + `<div>abc</div>` + "`" + `, 
@@ -32,7 +50,8 @@ func TestVue(t *testing.T) {
 				val1: "value",
 				int1: 1
 			}
-		}
+		}, 
+		path: '/abc/'
 	}`
 	b := &bytes.Buffer{}
 	v.WriteTo(b)
