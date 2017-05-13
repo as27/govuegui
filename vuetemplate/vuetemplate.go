@@ -15,74 +15,6 @@ import (
 	"text/template"
 )
 
-type JSType int
-
-const (
-	CONSTANT JSType = iota
-	VARIABLE
-	LETSTMT
-	FUNCTION
-	VUECOMPONENT
-	VUEAPP
-	VUEROUTER
-)
-
-// JSElement represents the different variable declarations
-// of JS.
-type JSElement struct {
-	JSType  JSType
-	VarName string
-	Value   string
-}
-
-func NewJSElement(t JSType, name, value string) JSElement {
-	return JSElement{
-		JSType:  t,
-		VarName: name,
-		Value:   value,
-	}
-}
-
-// String creates a JS line for the element
-func (jse JSElement) String() string {
-	var def = ""
-	switch jse.JSType {
-	default:
-		def = "const"
-	case CONSTANT:
-		def = "const"
-	case VARIABLE:
-		def = "var"
-	case LETSTMT:
-		def = "let"
-	case FUNCTION:
-		return fmt.Sprintf("const %s = function() {\n%s;\n};",
-			jse.VarName,
-			jse.Value,
-		)
-	case VUECOMPONENT:
-		return fmt.Sprintf("const %s = Vue.component('%s', %s)",
-			jse.VarName,
-			jse.VarName,
-			jse.Value,
-		)
-	}
-	return fmt.Sprintf("%s %s = \"%s\";",
-		def,
-		jse.VarName,
-		jse.Value,
-	)
-}
-
-// WriteTo implements the io.WriterTo interface by wrapping the String()
-// function. WriteTo makes it easier to serve the data inside of a http
-// handler.
-func (jse JSElement) WriteTo(w io.Writer) (int64, error) {
-	b := bytes.NewBufferString(jse.String())
-	n, err := w.Write(b.Bytes())
-	return int64(n), err
-}
-
 var helperFunc = template.FuncMap{
 	"function":   func(s string) string { return fmt.Sprintf("function(){\nreturn %s\n}", s) },
 	"backquotes": func(s string) string { return fmt.Sprintf("`%s`", s) },
@@ -122,23 +54,49 @@ const vueTemplate = `{{with .Template}}template: {{backquotes .}},{{end}}
 	 {{with .Watch}}watch: {{.}},{{end}}
 	 {{with .Path}}path: {{.}},{{end}}`
 
+// Component is used for vuejs components
 type Component struct {
 	Vue
 	Name string
 }
 
+// NewComponent creates a component and returns the pointer
 func NewComponent(name string) *Component {
 	return &Component{
 		Name: name,
 	}
 }
 
+// WriteTo implements the WriterTo interface. It takes a io.Writer and
+// writes the js block into the writer.
 func (c *Component) WriteTo(w io.Writer) (int64, error) {
-	//	jse := NewJSElement()
-	s := fmt.Sprintf("const %s = Vue.component('%s', ", c.Name, c.Name)
-	b := bytes.NewBufferString(s)
-	c.Vue.WriteTo(b)
-	b.Write([]byte(");"))
-	n, err := w.Write(b.Bytes())
+	jse := NewJSElement(VUECOMPONENT, c.Name, "")
+	// JSElement implements the io.Writer
+	n, err := c.Vue.WriteTo(jse)
+	if err != nil {
+		return int64(n), err
+	}
+	n, err = jse.WriteTo(w)
+	return int64(n), err
+}
+
+type Router struct {
+	Vue
+	Name string
+}
+
+func NewRouter(name string) *Router {
+	return &Router{
+		Name: name,
+	}
+}
+
+func (r *Router) WriteTo(w io.Writer) (int64, error) {
+	jse := NewJSElement(VUEROUTER, r.Name, "")
+	n, err := r.Vue.WriteTo(jse)
+	if err != nil {
+		return int64(n), err
+	}
+	n, err = jse.WriteTo(w)
 	return int64(n), err
 }
