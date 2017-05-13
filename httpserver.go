@@ -41,6 +41,7 @@ func NewRouter(g *Gui) *mux.Router {
 	r.HandleFunc(PathPrefix+"/lib/vue-router.min.js", vueroutermin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/bulma.css", bulma.Handler)
+	r.HandleFunc(PathPrefix+"/app.js", vueappHandler)
 	jsPrefix := PathPrefix + "/lib/"
 	if useRice {
 		box := rice.MustFindBox("lib")
