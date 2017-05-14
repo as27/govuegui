@@ -67,7 +67,15 @@ func TestJSElement(t *testing.T) {
 				"router",
 				"[{}]",
 			},
-			Expect: `const router = VueRouter([{}]);`,
+			Expect: `const router = new VueRouter([{}]);`,
+		},
+		{
+			Got: JSElement{
+				WEBSOCKET,
+				"socket",
+				"ws://server/ws",
+			},
+			Expect: `var socket = new WebSocket("ws://server/ws");`,
 		},
 	}
 	for _, tc := range testCases {

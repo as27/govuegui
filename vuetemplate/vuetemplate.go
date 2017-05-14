@@ -25,14 +25,16 @@ var helperFunc = template.FuncMap{
 // the core elements availiable. Route and component properties are added here,
 // too.
 type Vue struct {
-	Template string // vue template also used inside components
-	Data     string
-	Props    string // for handling values inside components
-	Children string // used inside components
-	Computed string
-	Methods  string
-	Watch    string
-	Path     string // just used inside routes
+	Template   string // vue template also used inside components
+	Data       string
+	Name       string // just used inside router definition
+	Props      string // for handling values inside components
+	Children   string // used inside components
+	Components string // used inside components
+	Computed   string
+	Methods    string
+	Watch      string
+	Path       string // just used inside routes
 }
 
 func NewVue() Vue {
@@ -51,8 +53,10 @@ func (v *Vue) WriteTo(w io.Writer) (int64, error) {
 
 const vueTemplate = `{{with .Template}}template: {{backquotes .}}, {{end}}
 {{with .Data}}data: {{function .}}, {{end}}
+{{with .Name}}name: {{.}}, {{end}}
 {{with .Props}}props: {{.}}, {{end}}
 {{with .Children}}children: {{.}}, {{end}}
+{{with .Components}}components: {{.}}, {{end}}
 {{with .Computed}}computed: {{.}}, {{end}}
 {{with .Methods}}methods: {{.}}, {{end}}
 {{with .Watch}}watch: {{.}}, {{end}}

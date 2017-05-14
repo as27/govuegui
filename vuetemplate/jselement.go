@@ -13,6 +13,7 @@ const (
 	VARIABLE
 	LETSTMT
 	FUNCTION
+	WEBSOCKET
 	VUECOMPONENT
 	VUEAPP
 	VUEROUTER
@@ -51,6 +52,11 @@ func (jse *JSElement) String() string {
 			jse.VarName,
 			jse.Value,
 		)
+	case WEBSOCKET:
+		return fmt.Sprintf("var %s = new WebSocket(\"%s\");",
+			jse.VarName,
+			jse.Value,
+		)
 	case VUECOMPONENT:
 		return fmt.Sprintf("const %s = Vue.component('%s', %s);",
 			jse.VarName,
@@ -63,7 +69,7 @@ func (jse *JSElement) String() string {
 			jse.Value,
 		)
 	case VUEROUTER:
-		return fmt.Sprintf("const %s = VueRouter(%s);",
+		return fmt.Sprintf("const %s = new VueRouter(%s);",
 			jse.VarName,
 			jse.Value,
 		)
