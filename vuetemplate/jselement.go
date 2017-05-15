@@ -64,7 +64,7 @@ func (jse *JSElement) String() string {
 			jse.Value,
 		)
 	case VUEAPP:
-		return fmt.Sprintf("const %s = Vue(%s);",
+		return fmt.Sprintf("const %s = new Vue(%s);",
 			jse.VarName,
 			jse.Value,
 		)
@@ -85,7 +85,7 @@ func (jse *JSElement) String() string {
 // function. WriteTo makes it easier to serve the data inside of a http
 // handler.
 func (jse *JSElement) WriteTo(w io.Writer) (int64, error) {
-	b := bytes.NewBufferString(jse.String())
+	b := bytes.NewBufferString(jse.String() + "\n/*----------------------*/\n")
 	n, err := w.Write(b.Bytes())
 	return int64(n), err
 }

@@ -53,7 +53,7 @@ func (v *Vue) WriteTo(w io.Writer) (int64, error) {
 
 const vueTemplate = `{{with .Template}}template: {{backquotes .}}, {{end}}
 {{with .Data}}data: {{function .}}, {{end}}
-{{with .Name}}name: {{.}}, {{end}}
+{{with .Name}}name: {{quotes .}}, {{end}}
 {{with .Props}}props: {{.}}, {{end}}
 {{with .Children}}children: {{.}}, {{end}}
 {{with .Components}}components: {{.}}, {{end}}
@@ -102,7 +102,7 @@ func NewRouter(name string, routes []Vue) *Router {
 
 func (r *Router) WriteTo(w io.Writer) (int64, error) {
 	jse := NewJSElement(VUEROUTER, r.Name, "")
-	jse.Write([]byte("{router: ["))
+	jse.Write([]byte("{routes: ["))
 	for _, v := range r.Routes {
 		n, err := v.WriteTo(jse)
 		if err != nil {

@@ -237,4 +237,31 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     },
 }`)
 	app.WriteTo(w)
+	b = bytes.NewBufferString("app.$mount('#govuegui');")
+	w.Write(b.Bytes())
 }
+
+var htmlTemplate = `<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    
+   
+    <script src="{{ .PathPrefix }}/lib/vue.min.js"></script>
+    <script src="{{ .PathPrefix }}/lib/vue-router.min.js"></script>
+    <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
+    
+
+     <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/lib/bulma.css" >
+     <alink rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.0/css/bulma.css">
+    
+    </head>
+    <body class="page-grid">
+
+        <div id="govuegui" class="container">
+            <router-view :data=data :forms=forms ></router-view>
+             
+        </div>
+        <script src="{{ .PathPrefix }}/app.js"></script>
+    </body>
+</html>`

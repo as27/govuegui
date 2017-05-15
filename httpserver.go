@@ -2,13 +2,9 @@ package govuegui
 
 import (
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 
-	rice "github.com/GeertJohan/go.rice"
 	"github.com/as27/golib/css/bulma"
 	"github.com/as27/golib/js/vuejsdev"
 	"github.com/as27/golib/js/vueresourcemin"
@@ -18,8 +14,6 @@ import (
 
 // PathPrefix defines the prefix for the all gui specific tasks
 var PathPrefix = "/govuegui"
-
-var useRice = false
 
 // ServerPort defines the port of the gui server, when using
 // `govuegui.Serve()`
@@ -42,18 +36,6 @@ func NewRouter(g *Gui) *mux.Router {
 	r.HandleFunc(PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
 	r.HandleFunc(PathPrefix+"/lib/bulma.css", bulma.Handler)
 	r.HandleFunc(PathPrefix+"/app.js", vueappHandler)
-	jsPrefix := PathPrefix + "/lib/"
-	if useRice {
-		box := rice.MustFindBox("lib")
-		htmlFiles := http.StripPrefix(jsPrefix, http.FileServer(box.HTTPBox()))
-		r.PathPrefix(jsPrefix).Handler(htmlFiles)
-	} else {
-		r.PathPrefix(jsPrefix).
-			Handler(
-				http.StripPrefix(jsPrefix,
-					http.FileServer(http.Dir("lib"))))
-	}
-
 	return r
 }
 
@@ -67,25 +49,7 @@ func Serve(g *Gui) error {
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	var templateString string
-	fpath := filepath.Join("html", "index.html")
-	_, err := os.Stat(fpath)
-	if err == os.ErrNotExist {
-		templateBox, err := rice.FindBox("html")
-		if err != nil {
-			log.Fatal(err)
-		}
-		templateString, err = templateBox.String("index.html")
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		tmpB, err := ioutil.ReadFile(fpath)
-		if err != nil {
-			log.Fatal(err)
-		}
-		templateString = string(tmpB)
-	}
-
+	templateString = htmlTemplate
 	tmplMessage, err := template.New("message").Parse(templateString)
 	if err != nil {
 		log.Fatal(err)
