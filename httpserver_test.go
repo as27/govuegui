@@ -6,13 +6,6 @@ import (
 	"testing"
 )
 
-func TestRouterWithRice(t *testing.T) {
-	useRice = true
-	routerTest(t)
-	useRice = false
-	routerTest(t)
-}
-
 func routerTest(t *testing.T) {
 	gui := NewGui()
 	ts := httptest.NewServer(NewRouter(gui))
