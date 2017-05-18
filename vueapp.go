@@ -28,6 +28,20 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.Props = "['data', 'element']"
 	comp.WriteTo(w)
 
+	comp = vuetemplate.NewComponent("gvgtable")
+	comp.Template = `<div class="text">
+    <table class="table is-narrow">
+    <thead>
+    <tr><th v-for="cell in data.Data.data[element.id][0]">{{cell}}</th></tr>
+    </thead>
+    <tr v-for="(row,index) in data.Data.data[element.id]" v-if="index > 0">
+    <td v-for="cell in row">{{cell}}</td>
+    </tr>
+    </table>
+    </div>`
+	comp.Props = "['data', 'element']"
+	comp.WriteTo(w)
+
 	comp = vuetemplate.NewComponent("gvgbutton")
 	comp.Template = `<div><br><button class="button is-primary" @click="callAction">{{element.label}}</button><br></div>`
 	comp.Props = "['data', 'element']"
@@ -58,6 +72,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         GVGINPUT: gvginput,
         GVGTEXTAREA: gvgtextarea,
         GVGTEXT: gvgtext,
+        GVGTABLE: gvgtable,
         GVGBUTTON: gvgbutton }`
 	comp.Computed = `{
         renderLabel: function(){
@@ -250,10 +265,8 @@ var htmlTemplate = `<!doctype html>
     <script src="{{ .PathPrefix }}/lib/vue.min.js"></script>
     <script src="{{ .PathPrefix }}/lib/vue-router.min.js"></script>
     <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
-    
 
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/lib/bulma.css" >
-     <alink rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.4.0/css/bulma.css">
     
     </head>
     <body class="page-grid">

@@ -23,6 +23,7 @@ const (
 	STRING        DataType = "STRING"
 	STRINGSLICE            = "STRINGARRAY"
 	STRINGPOINTER          = "STRINGPOINTER"
+	STRINGTABLE            = "STRINGTABLE"
 	INT                    = "INT"
 	INTPOINTER             = "INTPOINTER"
 	FLOAT64                = "FLOAT64"
@@ -78,6 +79,8 @@ func (d *Data) Set(key string, i interface{}) error {
 		d.Values[key] = STRING
 	case []string:
 		d.Values[key] = STRINGSLICE
+	case [][]string:
+		d.Values[key] = STRINGTABLE
 	case *string:
 		d.Values[key] = STRINGPOINTER
 	case int:

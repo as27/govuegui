@@ -40,6 +40,7 @@ const (
 	TEXTAREA             = "GVGTEXTAREA"
 	SELECT               = "GVGSELECT"
 	TEXT                 = "GVGTEXT"
+	TABLE                = "GVGTABLE"
 	BUTTON               = "GVGBUTTON"
 )
 
@@ -295,6 +296,10 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 
 func (b *Box) Input(id string) *Element {
 	return b.Element(id, INPUT)
+}
+
+func (b *Box) Table(id string) *Element {
+	return b.Element(id, TABLE)
 }
 
 func (b *Box) Textarea(id string) *Element {

@@ -26,6 +26,13 @@ func main() {
 	c := a + b
 	//quitCounter := make(chan bool)
 	go counter(gui)
+	gui.Form("Table").Box("Table").Table("A Table").Set(
+		[][]string{
+			{"h1", "my header", "table header"},
+			{"abc", "def", "hij"},
+			{"abc", "def", "hij"},
+			{"abc", "def", "hij"},
+		})
 	gui.Form("Sum").Box("Numbers").Input("A").Set(&a)
 
 	gui.Form("Sum").Box("Numbers").Input("B").Set(&b)

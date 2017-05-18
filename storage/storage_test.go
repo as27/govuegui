@@ -41,6 +41,14 @@ var testCases = []struct {
 		[]string{"abc", "def", "hij"},
 	},
 	{
+		"stringTable",
+		STRINGTABLE,
+		[][]string{
+			{"abc", "def", "hij"},
+			{"abc", "def", "hij"},
+		},
+	},
+	{
 		"string pointer",
 		STRINGPOINTER,
 		&str,
