@@ -80,19 +80,21 @@ func getOption(opt string, opts []*Option) *Option {
 
 // Gui groups different forms together.
 type Gui struct {
-	Forms   []*Form
-	Data    *storage.Data
-	hub     *hub
-	Actions map[string]func() `json:"-"`
-	CB      func()            `json:"-"`
+	Forms      []*Form
+	Data       *storage.Data
+	UpdateData *storage.Data
+	hub        *hub
+	Actions    map[string]func() `json:"-"`
+	CB         func()            `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
 func NewGui() *Gui {
 	return &Gui{
-		hub:     newWebsocketHub(),
-		Data:    storage.New(),
-		Actions: make(map[string]func()),
+		hub:        newWebsocketHub(),
+		Data:       storage.New(),
+		UpdateData: storage.New(),
+		Actions:    make(map[string]func()),
 	}
 }
 
@@ -186,13 +188,24 @@ func (g *Gui) Marshal() ([]byte, error) {
 	return json.MarshalIndent(g, "", "  ")
 }
 
-func (g *Gui) Update() error {
-	/*b, err := g.Marshal()
-	if err != nil {
-		return err
-	}*/
+// Update sends the values to the websocket. If a dataKey is specified
+// just the data to the key is updated.
+func (g *Gui) Update(dataKeys ...string) error {
+	// Clear update data at the beginning to ensure that is no data from
+	// the last update call.
+	g.clearUpdateData()
+	for _, key := range dataKeys {
+		err := g.UpdateData.Set(key, g.Data.Get(key))
+		if err != nil {
+			return err
+		}
+	}
 	err := g.hub.writeJSON(g)
 	return err
+}
+
+func (g *Gui) clearUpdateData() {
+	g.UpdateData = storage.New()
 }
 
 // Form wrapps one ore more Boxes

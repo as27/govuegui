@@ -216,9 +216,14 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	ws.WriteTo(w)
 	b := bytes.NewBufferString(`socket.onmessage = function(evt){
     var newData = JSON.parse(evt.data);
-    //console.log(evt.data); //TODO: Remove in production
-    console.log(evt);
+    var updateAll = true;
+        for(var dataKey in newData.UpdateData.data){
+            app.data.Data.data[dataKey] = newData.UpdateData.data[dataKey];
+            updateAll = false;
+        }
+    if (updateAll){
     app.data = newData;
+    }
 };	`)
 	w.Write(b.Bytes())
 
@@ -229,7 +234,6 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     router,
     data: {
         data: {},
-        dataNew: {},
         forms: {}
     },
     methods: {

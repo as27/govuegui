@@ -27,7 +27,7 @@ func main() {
 		func() {
 			logr = logrHead
 			myl(gui, "Log cleared")
-			err := gui.Update()
+			err := gui.Update("Log")
 			if err != nil {
 				myl(gui, "Error when updating log", err)
 			}
@@ -117,7 +117,7 @@ func counter(g *govuegui.Gui) {
 			status.Set("Running")
 			c++
 			myl(gui, "c++", c)
-			err := g.Update()
+			err := g.Update("NCounter", "Log")
 			if err != nil {
 				fmt.Println("--->", err)
 			}
