@@ -8,9 +8,30 @@ import (
 	"github.com/as27/govuegui"
 )
 
-func main() {
-	gui := govuegui.NewGui()
+var logrHead = [][]string{
+	[]string{"Time", "Text"},
+}
 
+var logr = logrHead
+
+var gui = govuegui.NewGui()
+
+func myl(gui *govuegui.Gui, s ...interface{}) {
+	ts := time.Now().Format(time.StampMilli)
+	logr = append(logr, []string{ts, fmt.Sprintln(s...)})
+	gui.Form("Log").Box("Log").Table("Log").Set(logr)
+}
+func main() {
+	gui.Form("Log").Box("Log").Table("Log")
+	gui.Form("Log").Box("Log").Button("Empty Log").Action(
+		func() {
+			logr = logrHead
+			myl(gui, "Log cleared")
+			err := gui.Update()
+			if err != nil {
+				myl(gui, "Error when updating log", err)
+			}
+		})
 	inputBox := gui.Form("Input").Box("Input")
 	ix := inputBox.Input("x")
 	inputBox.Input("x").Set(0)
@@ -28,10 +49,17 @@ func main() {
 	go counter(gui)
 	gui.Form("Table").Box("Table").Table("A Table").Set(
 		[][]string{
-			{"h1", "my header", "table header"},
+			{"h1", "my header", "hij"},
 			{"abc", "def", "hij"},
 			{"abc", "def", "hij"},
 			{"abc", "def", "hij"},
+		})
+	gui.Form("Table").Box("Table").Button("Add row").Action(
+		func() {
+			t := gui.Form("Table").Box("Table").Table("A Table").Get().([][]string)
+			t = append(t, []string{"r", "b", "ch"})
+			gui.Form("Table").Box("Table").Table("A Table").Set(t)
+
 		})
 	gui.Form("Sum").Box("Numbers").Input("A").Set(&a)
 
@@ -42,18 +70,20 @@ func main() {
 		func() {
 			err := gui.Update()
 			fmt.Println("Gui Update...", err)
+			myl(gui, "Gui Update...")
 		})
 	gui.Form("Sum").Box("Numbers").Button("A Plus 1").Action(
 		func() {
 			a++
 			c = a + b
 			fmt.Println("A++ called")
+			myl(gui, "A++ called")
 		})
 
 	gui.CB = func() {
 		//a = gui.Form("Sum").Box("Numbers").Input("A").Get().(int)
 		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a)
-		fmt.Println("a wird gesetzt: ", a)
+		myl(gui, "a wird gesetzt: ")
 		//d := gui.Form("Sum").Box("Numbers").Input("A").Get()
 		c = a + b
 		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a + b)
@@ -86,6 +116,7 @@ func counter(g *govuegui.Gui) {
 			spb.SetLabel("Pauses")
 			status.Set("Running")
 			c++
+			myl(gui, "c++", c)
 			err := g.Update()
 			if err != nil {
 				fmt.Println("--->", err)
