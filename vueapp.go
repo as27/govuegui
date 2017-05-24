@@ -24,7 +24,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.WriteTo(w)
 
 	comp = vuetemplate.NewComponent("gvgtext")
-	comp.Template = `<div class="text">{{data.Data.data[element.id]}}</div>`
+	comp.Template = `<div class="text" v-html="data.Data.data[element.id]"></div>`
 	comp.Props = "['data', 'element']"
 	comp.WriteTo(w)
 
