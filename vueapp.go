@@ -42,6 +42,15 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.Props = "['data', 'element']"
 	comp.WriteTo(w)
 
+	comp = vuetemplate.NewComponent("gvglist")
+	comp.Template = `<div class="text">
+   <ul>
+   <li v-for="litem in data.Data.data[element.id]">{{litem}}</li>
+   </ul> 
+    </div>`
+	comp.Props = "['data', 'element']"
+	comp.WriteTo(w)
+
 	comp = vuetemplate.NewComponent("gvgbutton")
 	comp.Template = `<div><br><button class="button is-primary" @click="callAction">{{element.label}}</button><br></div>`
 	comp.Props = "['data', 'element']"
@@ -73,6 +82,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         GVGTEXTAREA: gvgtextarea,
         GVGTEXT: gvgtext,
         GVGTABLE: gvgtable,
+        GVGLIST: gvglist,
         GVGBUTTON: gvgbutton }`
 	comp.Computed = `{
         renderLabel: function(){
