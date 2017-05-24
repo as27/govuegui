@@ -112,14 +112,26 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     }`
 	comp.WriteTo(w)
 
-	comp = vuetemplate.NewComponent("gvgform")
-	comp.Template = `<div><h1 class="title is-1">{{form.id}}</h1>
-    <div class="box" v-for="box in form.Boxes">
-    <gvgbox :box=box :data=data></gvgbox></div>
+	gvgform := vuetemplate.NewComponent("gvgform")
+	gvgform.Template = `<div><h1 class="title is-1">{{form.id}}</h1>
+    <div class="tabs">
+    <ul>
+    <router-link v-for="box in form.Boxes"
+        active-class="is-active"
+        tag="li"
+        :to="{ name: 'gvgbox', params: { boxid: box.id}}">
+       <a> {{box.id}}</a>
+    </router-link>
+    </ul>
+    </div>
+    <div class="box"><gvgbox :box=myBox :data=data></gvgbox></div>
     <button class="button is-primary" @click="saveData">Submit</button>
     </div>`
-	comp.Data = "{myForm:{id:''}}"
-	comp.Methods = `{
+	gvgform.Data = `{
+        myForm:{id:''},
+        myBox:{id:''},
+    }`
+	gvgform.Methods = `{
         saveData: function () {
             this.$http.post(PathPrefix + "/data", this.data).then(
                 res => {
@@ -134,12 +146,28 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
                     );
                 },res=>{console.log("There is an error")}
             );
+        },
+        getBox: function (){
+            if (typeof this.boxid === "undefined"){
+                this.myBox = this.form.Boxes[0]
+                return
+            };
+            for (var i = 0; i < this.form.Boxes.length;i++){
+                myBox = this.form.Boxes[i]
+                if (myBox.id===this.boxid){
+                    this.myBox = myBox;
+                    return;
+                }
+            }
         }
     }`
-	comp.Components = "{gvgbox: gvgbox}"
-	comp.Props = `{
+	gvgform.Watch = "{'$route': 'getBox'}"
+	// gvgform.Computed = "{}"
+	gvgform.Components = "{gvgbox: gvgbox}"
+	gvgform.Props = `{
         data: Object,
         formid: String,
+        boxid: String,
         form: {
             type: Object,
             default: function(){
@@ -150,7 +178,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
     }`
-	comp.WriteTo(w)
+	gvgform.WriteTo(w)
 
 	comp = vuetemplate.NewComponent("gvgforms")
 	comp.Template = `<div class="columns">
@@ -202,7 +230,15 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
                 path: '/:formid',
                 name: 'gvgform',
                 component: gvgform,
-                props: true
+                props: true,
+                children: [
+                    {
+                        path: '/:formid/:boxid',
+                        name: 'gvgbox',
+                        component: gvgbox,
+                        props: true
+                    }
+                ]
             }
         ]`
 	routes := []vuetemplate.Vue{route}
