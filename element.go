@@ -1,17 +1,21 @@
 package govuegui
 
+import "fmt"
+
 // Element represents a simple html element
 type Element struct {
-	Key       string `json:"id"`
+	Key       string `json:"-"`
+	DataKey   string `json:"id"`
 	Label     string `json:"label"`
 	gui       *Gui
+	box       *Box
 	InputType ElementType `json:"type"`
 	Options   []*Option   `json:"options"`
 }
 
 // ID returns the id of the element
 func (e *Element) ID() string {
-	return e.Key
+	return fmt.Sprintf("%s-%s", e.box.ID(), e.Key)
 }
 
 func (e *Element) SetLabel(l string) {

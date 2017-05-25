@@ -239,15 +239,16 @@ func (f *Form) appendOption(o *Option) {
 func (f *Form) Box(id string) *Box {
 	var box *Box
 	for _, b := range f.Boxes {
-		if b.ID() == id {
+		if b.Key == id {
 			box = b
 			break
 		}
 	}
 	if box == nil {
 		box = &Box{
-			Key: id,
-			gui: f.gui,
+			Key:  id,
+			form: f,
+			gui:  f.gui,
 		}
 		f.Boxes = append(f.Boxes, box)
 	}
@@ -259,12 +260,13 @@ type Box struct {
 	Key      string    `json:"id"`
 	Options  []*Option `json:"options"`
 	gui      *Gui
+	form     *Form
 	Elements []*Element `json:"elements"`
 }
 
 // ID returns the id of the box
 func (b *Box) ID() string {
-	return b.Key
+	return fmt.Sprintf("%s-%s", b.form.ID(), b.Key)
 }
 
 func (b *Box) Option(opt string, values ...string) {
@@ -291,7 +293,7 @@ func (b *Box) appendOption(o *Option) {
 func (b *Box) Element(id string, inputType ElementType) *Element {
 	var el *Element
 	for _, e := range b.Elements {
-		if e.ID() == id {
+		if e.Key == id {
 			el = e
 			break
 		}
@@ -301,8 +303,10 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 			Key:       id,
 			Label:     id,
 			gui:       b.gui,
+			box:       b,
 			InputType: inputType,
 		}
+		el.DataKey = el.ID()
 		b.Elements = append(b.Elements, el)
 	}
 	return el
