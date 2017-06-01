@@ -117,7 +117,7 @@ func counter(g *govuegui.Gui) {
 			status.Set("Running")
 			c++
 			myl(gui, "c++", c)
-			err := g.Update("NCounter", "Log")
+			err := g.Update("NCounter", "Log", "Status")
 			if err != nil {
 				fmt.Println("--->", err)
 			}
