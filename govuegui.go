@@ -87,7 +87,6 @@ type Gui struct {
 	UpdateData *storage.Data
 	hub        *hub
 	Actions    map[string]func() `json:"-"`
-	CB         func()            `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
@@ -157,7 +156,6 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			g.CB()
 		}
 	})
 	router.HandleFunc(prefix+"/ws", func(w http.ResponseWriter, r *http.Request) {

@@ -80,22 +80,6 @@ func main() {
 			myl(gui, "A++ called")
 		})
 
-	gui.CB = func() {
-		//a = gui.Form("Sum").Box("Numbers").Input("A").Get().(int)
-		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a)
-		myl(gui, "a wird gesetzt: ")
-		//d := gui.Form("Sum").Box("Numbers").Input("A").Get()
-		c = a + b
-		//gui.Form("Sum").Box("Numbers").Input("A + B").Set(a + b)
-		n := inputBox.Input("n")
-		resultBox.Clear()
-		for i := 1; i <= n.Get().(int); i++ {
-			name := fmt.Sprintf("n=%d: (x+y)*n", i)
-			x := inputBox.Input("x").Get().(int)
-			y := inputBox.Input("y").Get().(int)
-			resultBox.Text(name).Set((x + y) * i)
-		}
-	}
 	log.Fatal(govuegui.Serve(gui))
 }
 
