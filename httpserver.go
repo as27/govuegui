@@ -1,6 +1,7 @@
 package govuegui
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +11,7 @@ import (
 	"github.com/as27/golib/js/vueresourcemin"
 	"github.com/as27/golib/js/vueroutermin"
 	"github.com/gorilla/mux"
+	"github.com/skratchdot/open-golang/open"
 )
 
 // PathPrefix defines the prefix for the all gui specific tasks
@@ -44,6 +46,9 @@ func NewRouter(g *Gui) *mux.Router {
 func Serve(g *Gui) error {
 	r := NewRouter(g)
 	log.Println("Serving gvg on port: ", ServerPort)
+	gURL := fmt.Sprintf("http://localhost%s%s/", ServerPort, PathPrefix)
+	log.Println("Open your browser and go to ", gURL)
+	open.Run(gURL)
 	return http.ListenAndServe(ServerPort, r)
 }
 

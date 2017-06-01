@@ -40,7 +40,6 @@ func main() {
 	ix.Option("class", "active", "float", "left")
 	inputBox.Input("y").Set(0)
 	inputBox.Input("n").Set(0)
-	resultBox := gui.Form("Input").Box("Result")
 
 	a := 123
 	b := 200

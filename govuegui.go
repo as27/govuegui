@@ -159,7 +159,6 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	})
 	router.HandleFunc(prefix+"/ws", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("WS HandleFunc called!")
 		upgrader := websocket.Upgrader{
 			ReadBufferSize:  1024,
 			WriteBufferSize: 1024,
