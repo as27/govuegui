@@ -145,6 +145,15 @@ func (d *Data) GetType(key string) (DataType, error) {
 	return dt, err
 }
 
+// GetKeys returns all the keys a slice of strings
+func (d *Data) GetKeys() []string {
+	var keys []string
+	for k := range d.Values {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 // Remove just deletes the key from the storage. True is returned
 // when something could be removed. If the key not exists inside
 // the storage nothing could be deleted, so false is returned.

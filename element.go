@@ -43,6 +43,11 @@ func (e *Element) Get() interface{} {
 	return e.gui.Data.Get(e.ID())
 }
 
+func (e *Element) Update() *Element {
+	e.gui.Update(e.ID())
+	return e
+}
+
 func (e *Element) Action(f func()) *Element {
 	e.gui.Actions[e.ID()] = f
 	return e

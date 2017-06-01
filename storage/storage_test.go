@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"sort"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var str = "myString"
@@ -101,6 +104,19 @@ func TestGetType(t *testing.T) {
 			)
 		}
 	}
+}
+func TestGetKeys(t *testing.T) {
+	data := New()
+	var exp []string
+	for _, tc := range testCases {
+		data.Set(tc.key, tc.value)
+		exp = append(exp, tc.key)
+	}
+	got := data.GetKeys()
+	// Sort the slices, because GetKeys returns a random order
+	sort.Strings(got)
+	sort.Strings(exp)
+	assert.Equal(t, exp, got, "GetKeys() does not return the correct keys")
 }
 func TestSet(t *testing.T) {
 	data := New()

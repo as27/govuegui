@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/as27/govuegui/storage"
 	"github.com/gorilla/mux"
@@ -196,6 +197,24 @@ func (g *Gui) Update(dataKeys ...string) error {
 	// the last update call.
 	g.clearUpdateData()
 	for _, key := range dataKeys {
+		keyData := g.Data.Get(key)
+		if keyData == nil {
+			// Search for the element ID inside the data, when the key does
+			// not exist the data is nil. Then new keys are searched and
+			// updated
+			availiableKeys := g.Data.GetKeys()
+			var matchingKeys []string
+			suffix := fmt.Sprintf("-%s", key)
+			for _, ak := range availiableKeys {
+				if strings.HasSuffix(ak, suffix) {
+					matchingKeys = append(matchingKeys, ak)
+				}
+			}
+			if len(matchingKeys) == 0 {
+				return fmt.Errorf("key '%s' not found", key)
+			}
+			return g.Update(matchingKeys...)
+		}
 		err := g.UpdateData.Set(key, g.Data.Get(key))
 		if err != nil {
 			return err
