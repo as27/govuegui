@@ -20,6 +20,7 @@ func myl(gui *govuegui.Gui, s ...interface{}) {
 	ts := time.Now().Format(time.StampMilli)
 	logr = append(logr, []string{ts, fmt.Sprintln(s...)})
 	gui.Form("Log").Box("Log").Table("Log").Set(logr)
+	gui.Form("Log").Box("Log").Table("Log").Update()
 }
 func main() {
 	gui.Form("Log").Box("Log").Table("Log")
@@ -55,7 +56,8 @@ func main() {
 		})
 	gui.Form("Table").Box("Table").Button("Add row").Action(
 		func() {
-			t := gui.Form("Table").Box("Table").Table("A Table").Get().([][]string)
+			i := gui.Form("Table").Box("Table").Table("A Table").Get()
+			t := i.([][]string)
 			t = append(t, []string{"r", "b", "ch"})
 			gui.Form("Table").Box("Table").Table("A Table").Set(t)
 

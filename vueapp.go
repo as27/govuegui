@@ -325,6 +325,17 @@ var htmlTemplate = `<!doctype html>
             <router-view :data=data :forms=forms ></router-view>
              
         </div>
+        <footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>
+        <strong>govuigui</strong> 
+        by <a href="https://as27.github.io/" target="_blank">Andreas Schr&ouml;pfer</a>
+      </p>
+      <p><a href="https://github.com/as27/govuegui" target="_blank">govuigui github page</a></p>
+    </div>
+  </div>
+</footer>
         <script src="{{ .PathPrefix }}/app.js"></script>
     </body>
 </html>`
