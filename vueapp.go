@@ -123,7 +123,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.WriteTo(w)
 
 	gvgform := vuetemplate.NewComponent("gvgform")
-	gvgform.Template = `<div><h1 class="title is-1">{{form.id}}</h1>
+	gvgform.Template = `<div>
     <div class="tabs">
     <ul>
     <router-link v-for="box in form.Boxes"
@@ -317,14 +317,17 @@ var htmlTemplate = `<!doctype html>
     <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
 
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/lib/bulma.css" >
-    
+   <title>{{ .Title }}</title>
     </head>
     <body class="page-grid">
-
+    <div class="container">
+   <div class=""><h1 class="title is-1">{{.Title}}</h1></div> 
+    </div>
         <div id="govuegui" class="container">
             <router-view :data=data :forms=forms ></router-view>
              
         </div>
+    <section class="section">
         <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
@@ -336,6 +339,7 @@ var htmlTemplate = `<!doctype html>
     </div>
   </div>
 </footer>
+    </section>
         <script src="{{ .PathPrefix }}/app.js"></script>
     </body>
 </html>`

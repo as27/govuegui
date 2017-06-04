@@ -9,6 +9,7 @@ import (
 
 func main() {
 	gui := govuegui.NewGui()
+	gui.Title = "Hello gui!"
 	myForm := gui.Form("myForm")
 	myBox1 := myForm.Box("Box 1")
 	counter := 0

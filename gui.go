@@ -16,6 +16,7 @@ import (
 
 // Gui groups different forms together.
 type Gui struct {
+	Title      string
 	Forms      []*Form
 	Data       *storage.Data
 	UpdateData *storage.Data
@@ -26,6 +27,7 @@ type Gui struct {
 // NewGui returns a pointer to a new instance of a gui
 func NewGui() *Gui {
 	return &Gui{
+		Title:      "My govuigui app",
 		hub:        newWebsocketHub(),
 		Data:       storage.New(),
 		UpdateData: storage.New(),
@@ -68,6 +70,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		data := make(map[string]string)
 		data["PathPrefix"] = PathPrefix
+		data["Title"] = g.Title
 		tmplMessage.Execute(w, data)
 	})
 	router.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
