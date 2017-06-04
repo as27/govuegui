@@ -3,6 +3,7 @@ package govuegui
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -58,6 +59,17 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router := mux.NewRouter()
 	//r.HandleFunc(PathPrefix+"/", rootHandler)
 	prefix := PathPrefix + "/data"
+	router.HandleFunc(PathPrefix+"/", func(w http.ResponseWriter, r *http.Request) {
+		var templateString string
+		templateString = htmlTemplate
+		tmplMessage, err := template.New("message").Parse(templateString)
+		if err != nil {
+			log.Fatal(err)
+		}
+		data := make(map[string]string)
+		data["PathPrefix"] = PathPrefix
+		tmplMessage.Execute(w, data)
+	})
 	router.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
 		action := q.Get("action")

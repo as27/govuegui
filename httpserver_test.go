@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func routerTest(t *testing.T) {
+func TestRouter(t *testing.T) {
 	gui := NewGui()
 	ts := httptest.NewServer(NewRouter(gui))
 	defer ts.Close()
@@ -15,7 +15,7 @@ func routerTest(t *testing.T) {
 		"lib/vue-resource.min.js",
 		"lib/vue-router.min.js",
 		"lib/bulma.css",
-		"lib/app.js",
+		"app.js",
 		"",
 	}
 	for _, tURL := range testUrls {

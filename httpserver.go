@@ -2,7 +2,6 @@ package govuegui
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 
@@ -30,7 +29,7 @@ var ServerPort = ":2700"
 //   r.HandleFunc("/products/{key}", ProductHandler)
 func NewRouter(g *Gui) *mux.Router {
 	r := mux.NewRouter()
-	r.HandleFunc(PathPrefix+"/", rootHandler)
+	r.Handle(PathPrefix+"/", g)
 	r.Handle(PathPrefix+"/data", g)
 	r.Handle(PathPrefix+"/data/ws", g)
 	r.HandleFunc(PathPrefix+"/lib/vue.min.js", vuejsdev.Handler)
@@ -50,16 +49,4 @@ func Serve(g *Gui) error {
 	log.Println("Open your browser and go to ", gURL)
 	open.Run(gURL)
 	return http.ListenAndServe(ServerPort, r)
-}
-
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	var templateString string
-	templateString = htmlTemplate
-	tmplMessage, err := template.New("message").Parse(templateString)
-	if err != nil {
-		log.Fatal(err)
-	}
-	data := make(map[string]string)
-	data["PathPrefix"] = PathPrefix
-	tmplMessage.Execute(w, data)
 }
