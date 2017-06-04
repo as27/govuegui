@@ -34,6 +34,7 @@ type Vue struct {
 	Computed   string
 	Methods    string
 	Watch      string
+	Mounted    string
 	Path       string // just used inside routes
 }
 
@@ -60,6 +61,7 @@ const vueTemplate = `{{with .Template}}template: {{backquotes .}}, {{end}}
 {{with .Computed}}computed: {{.}}, {{end}}
 {{with .Methods}}methods: {{.}}, {{end}}
 {{with .Watch}}watch: {{.}}, {{end}}
+{{with .Mounted}}mounted: {{.}}, {{end}}
 {{with .Path}}path: {{quotes .}}, {{end}}`
 
 // Component is used for vuejs components

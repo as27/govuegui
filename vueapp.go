@@ -172,6 +172,9 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         }
     }`
 	gvgform.Watch = "{'$route': 'getBox'}"
+	gvgform.Mounted = `function() {
+        this.getBox();
+    }`
 	// gvgform.Computed = "{}"
 	gvgform.Components = "{gvgbox: gvgbox}"
 	gvgform.Props = `{
@@ -330,7 +333,7 @@ var htmlTemplate = `<!doctype html>
     <section class="section">
         <footer class="footer">
   <div class="container">
-    <div class="content has-text-centered">
+   <div class="content has-text-centered">
       <p>
         <strong>govuigui</strong> 
         by <a href="https://as27.github.io/" target="_blank">Andreas Schr&ouml;pfer</a>
