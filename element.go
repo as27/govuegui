@@ -48,7 +48,7 @@ func (e *Element) Update() *Element {
 	return e
 }
 
-func (e *Element) Action(f func()) *Element {
+func (e *Element) Action(f func(*Gui)) *Element {
 	e.gui.Actions[e.ID()] = f
 	return e
 }

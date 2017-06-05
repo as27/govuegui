@@ -21,7 +21,7 @@ type Gui struct {
 	Data       *storage.Data
 	UpdateData *storage.Data
 	hub        *hub
-	Actions    map[string]func() `json:"-"`
+	Actions    map[string]func(*Gui) `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
@@ -31,7 +31,7 @@ func NewGui() *Gui {
 		hub:        newWebsocketHub(),
 		Data:       storage.New(),
 		UpdateData: storage.New(),
-		Actions:    make(map[string]func()),
+		Actions:    make(map[string]func(*Gui)),
 	}
 }
 
@@ -79,7 +79,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if action != "" {
 			a, ok := g.Actions[action]
 			if ok {
-				a()
+				a(g)
 			}
 			return
 		}

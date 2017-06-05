@@ -312,6 +312,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             );
         },
         saveData: function () {
+            console.log("saveData called!");
             this.$http.post('/collection/' + this.cid + '/' + this.iid, this.item.data);
         }
     },

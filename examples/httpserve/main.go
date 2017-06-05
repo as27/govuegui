@@ -25,7 +25,7 @@ func myl(gui *govuegui.Gui, s ...interface{}) {
 func main() {
 	gui.Form("Log").Box("Log").Table("Log")
 	gui.Form("Log").Box("Log").Button("Empty Log").Action(
-		func() {
+		func(gui *govuegui.Gui) {
 			logr = logrHead
 			myl(gui, "Log cleared")
 			err := gui.Update("Log")
@@ -55,7 +55,7 @@ func main() {
 			{"abc", "def", "hij"},
 		})
 	gui.Form("Table").Box("Table").Button("Add row").Action(
-		func() {
+		func(gui *govuegui.Gui) {
 			i := gui.Form("Table").Box("Table").Table("A Table").Get()
 			t := i.([][]string)
 			t = append(t, []string{"r", "b", "ch"})
@@ -68,13 +68,13 @@ func main() {
 	gui.Form("Sum").Box("Numbers").Input("A + B").Set(&c)
 	gui.Form("Sum").Box("Numbers").Text("Result").Set(&c)
 	gui.Form("Sum").Box("Numbers").Button("WS Update").Action(
-		func() {
+		func(gui *govuegui.Gui) {
 			err := gui.Update()
 			fmt.Println("Gui Update...", err)
 			myl(gui, "Gui Update...")
 		})
 	gui.Form("Sum").Box("Numbers").Button("A Plus 1").Action(
-		func() {
+		func(gui *govuegui.Gui) {
 			a++
 			c = a + b
 			fmt.Println("A++ called")
@@ -91,7 +91,7 @@ func counter(g *govuegui.Gui) {
 	spb := g.Form("Counter").Box("Numbers").Button("Start/Pause")
 	spb.SetLabel("Pause")
 	spb.Action(
-		func() {
+		func(g *govuegui.Gui) {
 			quit <- true
 		})
 	status := g.Form("Counter").Box("Numbers").Text("Status")
@@ -113,7 +113,7 @@ func counter(g *govuegui.Gui) {
 			g.Update()
 
 			spb.Action(
-				func() {
+				func(g *govuegui.Gui) {
 					start <- true
 					spb.SetLabel("Pause")
 					status.Set("Waiting for next tick")
@@ -122,7 +122,7 @@ func counter(g *govuegui.Gui) {
 			select {
 			case <-start:
 				spb.Action(
-					func() {
+					func(g *govuegui.Gui) {
 						quit <- true
 					})
 			}
