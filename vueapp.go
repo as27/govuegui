@@ -42,6 +42,19 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.Props = "['data', 'element']"
 	comp.WriteTo(w)
 
+	comp = vuetemplate.NewComponent("gvgdropdown")
+	comp.Template = `<div class="field">
+    <label class="label"></label>
+    <p class="control">
+    <span class="select">
+    <select v-model="data.Data.data[element.id]">
+    <option v-for="oitem in element.options" v-bind:value="oitem.Option">{{oitem.Values[0]}}</option>
+    </select></span>
+    </p>
+    </div>`
+	comp.Props = "['data', 'element']"
+	comp.WriteTo(w)
+
 	comp = vuetemplate.NewComponent("gvglist")
 	comp.Template = `<div class="text">
    <ul>
@@ -83,6 +96,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         GVGTEXT: gvgtext,
         GVGTABLE: gvgtable,
         GVGLIST: gvglist,
+        GVGDROPDOWN: gvgdropdown,
         GVGBUTTON: gvgbutton }`
 	comp.Computed = `{
         renderLabel: function(){
@@ -98,7 +112,8 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             default: function(){
                 return {
                     id:"",
-                    label:""
+                    label:"",
+                    options:[{Option:"",Values:[""]}]
                 }
             }
         }

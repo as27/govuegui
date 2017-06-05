@@ -1,12 +1,11 @@
 // Package govuegui provides a simple gui, which can be used via a
-// http server inside the browser. There are three different abstractions
-// to build the gui. Every level gets a identifier as a string.
+// http server inside the browser. There are three different elements
+// for building the gui. Every level gets a identifier as a string.
 //
 // First level is the Form. Every Form has one submit button.
 //
 // Inside a form every element is grouped into a Box. Each Form can
 // hold as many Boxes as wanted.
-//
 //
 //
 // The api let's you define everything on a very simple way:
@@ -19,14 +18,11 @@
 //   Form("abc").Box("cde").Each(func(){})
 package govuegui
 
-import (
-	"fmt"
-)
-
 // ElementType defines the
 type ElementType string
 
-// Defining the allowed ElementTypes
+// Defining the allowed ElementTypes. The value of each type is used inside
+// the vueapp.
 const (
 	INPUT    ElementType = "GVGINPUT"
 	TEXTAREA             = "GVGTEXTAREA"
@@ -34,6 +30,7 @@ const (
 	TEXT                 = "GVGTEXT"
 	TABLE                = "GVGTABLE"
 	LIST                 = "GVGLIST"
+	DROPDOWN             = "GVGDROPDOWN"
 	BUTTON               = "GVGBUTTON"
 )
 
@@ -115,87 +112,6 @@ func (f *Form) Box(id string) *Box {
 		f.Boxes = append(f.Boxes, box)
 	}
 	return box
-}
-
-// Box is the way elements are grouped. Every Element
-type Box struct {
-	Key      string    `json:"id"`
-	Options  []*Option `json:"options"`
-	gui      *Gui
-	form     *Form
-	Elements []*Element `json:"elements"`
-}
-
-// ID returns the id of the box
-func (b *Box) ID() string {
-	return fmt.Sprintf("%s-%s", b.form.ID(), b.Key)
-}
-
-func (b *Box) Option(opt string, values ...string) {
-	addOption(b, opt, values...)
-}
-
-func (b *Box) Clear() {
-	for _, el := range b.Elements {
-		// Remove values from storage
-		b.gui.Data.Remove(el.ID())
-	}
-	// Set Elements to empty struct
-	b.Elements = []*Element{}
-}
-
-func (b *Box) getOption(opt string) *Option {
-	return getOption(opt, b.Options)
-}
-
-func (b *Box) appendOption(o *Option) {
-	b.Options = append(b.Options, o)
-}
-
-func (b *Box) Element(id string, inputType ElementType) *Element {
-	var el *Element
-	for _, e := range b.Elements {
-		if e.Key == id {
-			el = e
-			break
-		}
-	}
-	if el == nil {
-		el = &Element{
-			Key:       id,
-			Label:     id,
-			gui:       b.gui,
-			box:       b,
-			InputType: inputType,
-		}
-		el.DataKey = el.ID()
-		b.Elements = append(b.Elements, el)
-	}
-	return el
-}
-
-func (b *Box) Input(id string) *Element {
-	return b.Element(id, INPUT)
-}
-
-func (b *Box) Table(id string) *Element {
-	return b.Element(id, TABLE)
-}
-
-func (b *Box) Textarea(id string) *Element {
-	return b.Element(id, TEXTAREA)
-}
-
-func (b *Box) Text(id string) *Element {
-	return b.Element(id, TEXT)
-}
-
-func (b *Box) List(id string) *Element {
-	return b.Element(id, LIST)
-}
-
-func (b *Box) Button(id string) *Element {
-	return b.Element(id, BUTTON)
 }
 
 /*type Button struct {
