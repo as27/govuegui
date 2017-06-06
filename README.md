@@ -2,21 +2,22 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/as27/govuegui)](https://goreportcard.com/report/github.com/as27/govuegui)
 
 # govuegui
+
 A web GUI for Go
 
-# Development settings
+## Important
 
-When developing on the html files or the vue app you need to set the unexported variable `useRice = false`.
+This project is still in development and not production ready. You can try it and you can use it for simple internal apps or prototyping. But there are still a lot of open issues. 
 
-That the changes takes effect to the package, after every change inside of the html folder you need to run:
+## Target of this project
 
-```
-rice embed-go
-```
+The idea to use a browser as a gui is not new. For example [Electron](https://electron.atom.io/) uses the same principle. It includes a chrome browser and a node.js server. Because of that the binaries are huge. Why not use the allready installed browser? So govuegui just includes a server which is talking to the browser via a websocket connection.
+
+The api of govuegui should be very simple that it is very easy to use.
 
 # Used projects
 
 This package includes following great project:
 
-* [Pure.css](https://purecss.io/)
-* [Gorillatoolkit](http://www.gorillatoolkit.org/)
+* [Bulma](http://bulma.io/) as CSS library
+* [Gorillatoolkit](http://www.gorillatoolkit.org/) for the websocket
