@@ -44,7 +44,6 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 
 	comp = vuetemplate.NewComponent("gvgdropdown")
 	comp.Template = `<div class="field">
-    <label class="label"></label>
     <p class="control">
     <span class="select">
     <select v-model="data.Data.data[element.id]">
@@ -52,6 +51,19 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     </select></span>
     </p>
     </div>`
+	/*comp.Computed = `{
+	    datastring: function(){
+	        return JSON.stringify(this.data.Data.data[this.element.id])
+	    }
+	}`*/
+	/*
+	   comp.Watch = `{
+	       datastring: function(){
+	           console.log("Dropdown changed");
+	           this.$root.saveData();
+	           this.$root.callAction(this.element.id);
+	       }}`
+	*/
 	comp.Props = "['data', 'element']"
 	comp.WriteTo(w)
 
@@ -98,7 +110,16 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         GVGLIST: gvglist,
         GVGDROPDOWN: gvgdropdown,
         GVGBUTTON: gvgbutton }`
+	comp.Watch = `{
+        datastring: function(){
+            console.log("Dropdown changed");
+            this.$root.saveData();
+            this.$root.callAction(this.element.id);
+        }}`
 	comp.Computed = `{
+        datastring: function(){
+            return JSON.stringify(this.data.Data.data[this.element.id])
+        },
         renderLabel: function(){
             if (this.element.type != 'GVGBUTTON'){
                 return true;
@@ -158,6 +179,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     }`
 	gvgform.Methods = `{
         saveData: function () {
+            console.log("saveData called");
             this.$http.post(PathPrefix + "/data", this.data).then(
                 res => {
                     console.log("post ready");
@@ -186,7 +208,9 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
     }`
-	gvgform.Watch = "{'$route': 'getBox'}"
+	gvgform.Watch = `{
+        '$route': 'getBox'
+    }`
 	gvgform.Mounted = `function() {
         this.getBox();
     }`
@@ -312,8 +336,15 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             );
         },
         saveData: function () {
-            console.log("saveData called!");
-            this.$http.post('/collection/' + this.cid + '/' + this.iid, this.item.data);
+            console.log("saveData called");
+            this.$http.post(PathPrefix + "/data", this.data).then(
+                res => {
+                    console.log("SaveData success");
+                },res=>{console.log("There is an error")}
+            );
+        },
+        callAction: function(id) {
+            this.$http.get(PathPrefix+"/data?action="+id);
         }
     },
     created: function () {

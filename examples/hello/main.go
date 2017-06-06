@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -15,6 +16,9 @@ func main() {
 	counter := 0
 	guiCounter := myBox1.Text("Counter")
 	guiCounter.Set(&counter)
+	guiCounter.Action(func(gui *govuegui.Gui) {
+		fmt.Println("Counter changed -->", guiCounter.Get().(*int))
+	})
 	go count(&counter, guiCounter)
 	myBox2 := myForm.Box("Box 2")
 	myDropdown := myBox2.Dropdown("MyDropdown")
@@ -23,6 +27,9 @@ func main() {
 	myDropdown.Option("key3", "Value 3")
 	myDropdown.Option("key4", "Value 4")
 	myDropdown.Set("key3")
+	myDropdown.Action(func(gui *govuegui.Gui) {
+		fmt.Printf("%#v", myDropdown.Get())
+	})
 	log.Fatal(govuegui.Serve(gui))
 }
 
