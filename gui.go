@@ -104,6 +104,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
+			g.Update()
 		}
 	})
 	router.HandleFunc(prefix+"/ws", func(w http.ResponseWriter, r *http.Request) {

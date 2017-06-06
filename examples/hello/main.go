@@ -17,7 +17,7 @@ func main() {
 	guiCounter := myBox1.Text("Counter")
 	guiCounter.Set(&counter)
 	guiCounter.Action(func(gui *govuegui.Gui) {
-		fmt.Println("Counter changed -->", guiCounter.Get().(*int))
+		fmt.Println("Counter changed -->", *guiCounter.Get().(*int))
 	})
 	go count(&counter, guiCounter)
 	myBox2 := myForm.Box("Box 2")
@@ -29,6 +29,12 @@ func main() {
 	myDropdown.Set("key3")
 	myDropdown.Action(func(gui *govuegui.Gui) {
 		fmt.Printf("%#v", myDropdown.Get())
+	})
+	myInput := myBox2.Input("MyInput")
+	myInput.Set("MyInput value")
+	myInput.Action(func(gui *govuegui.Gui) {
+		fmt.Println(myInput.ID(), "myInput -->", myInput.Get())
+		//gui.Update(myInput.ID())
 	})
 	log.Fatal(govuegui.Serve(gui))
 }
