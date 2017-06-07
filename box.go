@@ -57,26 +57,47 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 	return el
 }
 
+// Input generates a simple html input field. The field is watched, so
+// every change is submited from the browser and is availiable inside
+// your go app.
+// If you add a action to this field, the action is called everytime
+// the field changes.
 func (b *Box) Input(id string) *Element {
 	e := b.Element(id, INPUT)
 	e.Watch = true
 	return e
 }
 
+// Table generates a html table inside the gui. That the table is correct
+// rendered you need to pass a [][]string into via the set method.
+// The first slice will be rendered as table header.
+//   table := [][]string{
+//		{"name", "age", "country"}, // is rendered as header
+//		{"Andreas", "27", "Germany"},
+//		{"Bob", "22", "Austria"},
+//		}
+//   gui.Form("myForm").Box("Box1").Table("myTable").Set(table)
 func (b *Box) Table(id string) *Element {
 	return b.Element(id, TABLE)
 }
 
+// Textarea is analog like the input field, just as a html textarea.
+// The field is watched so every change is submited.
 func (b *Box) Textarea(id string) *Element {
 	e := b.Element(id, TEXTAREA)
 	e.Watch = true
 	return e
 }
 
+// Text enables you to write text on the gui. HTML tags are allowed.
 func (b *Box) Text(id string) *Element {
 	return b.Element(id, TEXT)
 }
 
+// List renders a html list. That the list is correct rendered you need
+// to pass a slice of string into it.
+//   list := []string{"one", "two", "three"}
+//   gui.Form("myForm").Box("Box1").List("myTable").Set(list)
 func (b *Box) List(id string) *Element {
 	return b.Element(id, LIST)
 }
