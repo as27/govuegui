@@ -38,19 +38,25 @@ func (e *Element) Option(opt string, values ...string) *Element {
 	return e
 }
 
+// Set takes a value for rendering inside a element of the gui.
 func (e *Element) Set(i interface{}) error {
 	return e.gui.Data.Set(e.ID(), i)
 }
 
+// Get returns a value out from the gui.
 func (e *Element) Get() interface{} {
 	return e.gui.Data.Get(e.ID())
 }
 
+// Update is the method to let the gui send the value from the gui server
+// to the browser.
 func (e *Element) Update() *Element {
 	e.gui.Update(e.ID())
 	return e
 }
 
+// Action takes a callback function. For input fields that function
+// is called when the value changes.
 func (e *Element) Action(f func(*Gui)) *Element {
 	e.gui.Actions[e.ID()] = f
 	return e

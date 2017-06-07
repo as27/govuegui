@@ -57,7 +57,7 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 	return el
 }
 
-// Input generates a simple html input field. The field is watched, so
+// Input adds a simple html input field to the box. The field is watched, so
 // every change is submited from the browser and is availiable inside
 // your go app.
 // If you add a action to this field, the action is called everytime
@@ -68,7 +68,7 @@ func (b *Box) Input(id string) *Element {
 	return e
 }
 
-// Table generates a html table inside the gui. That the table is correct
+// Table adds a html table inside to the box. That the table is correct
 // rendered you need to pass a [][]string into via the set method.
 // The first slice will be rendered as table header.
 //   table := [][]string{
@@ -102,10 +102,19 @@ func (b *Box) List(id string) *Element {
 	return b.Element(id, LIST)
 }
 
+// Button adds a button to the box. Every button can hold a action, which
+// is called, when the button is clicked.
 func (b *Box) Button(id string) *Element {
 	return b.Element(id, BUTTON)
 }
 
+// Dropdown adds a dropdown element to the box. All the entries of the dropdown
+// list needs to be added via the Option() method.
+//   dropdown := gui.Form("myForm").Box("Box1").Dropdown("MyDropdown")
+//   dropdown.Option("key1", "Value 1")
+//   dropdown.Option("key2", "Value 2")
+//   dropdown.Option("key3", "Value 3")
+// The first argument specifies the key, which will be returned.
 func (b *Box) Dropdown(id string) *Element {
 	e := b.Element(id, DROPDOWN)
 	e.Watch = true
