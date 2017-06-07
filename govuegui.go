@@ -40,37 +40,10 @@ type Option struct {
 	Values []string
 }
 
-type optioner interface {
-	getOption(string) *Option
-	appendOption(*Option)
-}
-
-func addOption(o optioner, opt string, values ...string) {
-	op := o.getOption(opt)
-	if op != nil {
-		op.Values = values
-	} else {
-		newOption := Option{
-			Option: opt,
-			Values: values,
-		}
-		o.appendOption(&newOption)
-	}
-}
-
-func getOption(opt string, opts []*Option) *Option {
-	for _, o := range opts {
-		if o.Option == opt {
-			return o
-		}
-	}
-	return nil
-}
-
 // Form wrapps one ore more Boxes
 type Form struct {
-	Key     string    `json:"id"`
-	Options []*Option `json:"options"`
+	Key     string             `json:"id"`
+	Options map[string]*Option `json:"options"`
 	gui     *Gui
 	Boxes   []*Box
 }
@@ -80,16 +53,13 @@ func (f *Form) ID() string {
 	return f.Key
 }
 
-func (f *Form) Option(opt string, values ...string) {
-	addOption(f, opt, values...)
-}
+func (f *Form) Option(opt string, values ...string) *Form {
+	f.Options[opt] = &Option{
+		Option: opt,
+		Values: values,
+	}
+	return f
 
-func (f *Form) getOption(opt string) *Option {
-	return getOption(opt, f.Options)
-}
-
-func (f *Form) appendOption(o *Option) {
-	f.Options = append(f.Options, o)
 }
 
 // Box returns the pointer to the box with the given id. If there
@@ -104,9 +74,10 @@ func (f *Form) Box(id string) *Box {
 	}
 	if box == nil {
 		box = &Box{
-			Key:  id,
-			form: f,
-			gui:  f.gui,
+			Key:     id,
+			form:    f,
+			gui:     f.gui,
+			Options: make(map[string]*Option),
 		}
 		f.Boxes = append(f.Boxes, box)
 	}

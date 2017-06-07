@@ -48,8 +48,9 @@ func (g *Gui) Form(id string) *Form {
 	}
 	if form == nil {
 		form = &Form{
-			Key: id,
-			gui: g,
+			Key:     id,
+			gui:     g,
+			Options: make(map[string]*Option),
 		}
 		g.Forms = append(g.Forms, form)
 	}

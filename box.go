@@ -4,8 +4,8 @@ import "fmt"
 
 // Box is the way elements are grouped. Every Element
 type Box struct {
-	Key      string    `json:"id"`
-	Options  []*Option `json:"options"`
+	Key      string             `json:"id"`
+	Options  map[string]*Option `json:"options"`
 	gui      *Gui
 	form     *Form
 	Elements []*Element `json:"elements"`
@@ -16,8 +16,12 @@ func (b *Box) ID() string {
 	return fmt.Sprintf("%s-%s", b.form.ID(), b.Key)
 }
 
-func (b *Box) Option(opt string, values ...string) {
-	addOption(b, opt, values...)
+func (b *Box) Option(opt string, values ...string) *Box {
+	b.Options[opt] = &Option{
+		Option: opt,
+		Values: values,
+	}
+	return b
 }
 
 func (b *Box) Clear() {
@@ -27,14 +31,6 @@ func (b *Box) Clear() {
 	}
 	// Set Elements to empty struct
 	b.Elements = []*Element{}
-}
-
-func (b *Box) getOption(opt string) *Option {
-	return getOption(opt, b.Options)
-}
-
-func (b *Box) appendOption(o *Option) {
-	b.Options = append(b.Options, o)
 }
 
 func (b *Box) Element(id string, inputType ElementType) *Element {
