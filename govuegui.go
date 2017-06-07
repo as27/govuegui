@@ -41,7 +41,6 @@ type Option struct {
 }
 
 type optioner interface {
-	Option(string, ...string)
 	getOption(string) *Option
 	appendOption(*Option)
 }

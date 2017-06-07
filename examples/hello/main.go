@@ -36,6 +36,29 @@ func main() {
 		fmt.Println(myInput.ID(), "myInput -->", myInput.Get())
 		//gui.Update(myInput.ID())
 	})
+
+	gui.Form("Test").Box("Test").Button("Start").Action(func(gui *govuegui.Gui) {
+		txt := "Das ist der Text<br>"
+		gui.Form("Test").Box("Test").Text("Testtxt").Set(txt)
+		gui.Update()
+		time.Sleep(2 * time.Second)
+		gui.Form("Test").Box("Test").Text("Testtxt").Set(txt)
+		txt = txt + "Noch eine Zeile<br>"
+		gui.Form("Test").Box("Test").Text("Testtxt").Set(txt)
+		gui.Update()
+		time.Sleep(2 * time.Second)
+		txt = txt + "Noch eine Zeile<br>"
+		gui.Form("Test").Box("Test").Text("Testtxt").Set(txt)
+		gui.Update()
+		time.Sleep(2 * time.Second)
+		txt = txt + "Noch eine Zeile<br>"
+		gui.Form("Test").Box("Test").Text("Testtxt").Set(txt)
+		gui.Update()
+		time.Sleep(2 * time.Second)
+		txt = txt + "Noch eine Zeile<br>"
+		gui.Update()
+	})
+
 	log.Fatal(govuegui.Serve(gui))
 }
 

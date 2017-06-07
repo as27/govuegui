@@ -52,6 +52,8 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 			gui:       b.gui,
 			box:       b,
 			InputType: inputType,
+			Watch:     false,
+			Options:   make(map[string]*Option),
 		}
 		el.DataKey = el.ID()
 		b.Elements = append(b.Elements, el)
@@ -60,7 +62,9 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 }
 
 func (b *Box) Input(id string) *Element {
-	return b.Element(id, INPUT)
+	e := b.Element(id, INPUT)
+	e.Watch = true
+	return e
 }
 
 func (b *Box) Table(id string) *Element {
@@ -68,7 +72,9 @@ func (b *Box) Table(id string) *Element {
 }
 
 func (b *Box) Textarea(id string) *Element {
-	return b.Element(id, TEXTAREA)
+	e := b.Element(id, TEXTAREA)
+	e.Watch = true
+	return e
 }
 
 func (b *Box) Text(id string) *Element {
@@ -84,5 +90,7 @@ func (b *Box) Button(id string) *Element {
 }
 
 func (b *Box) Dropdown(id string) *Element {
-	return b.Element(id, DROPDOWN)
+	e := b.Element(id, DROPDOWN)
+	e.Watch = true
+	return e
 }

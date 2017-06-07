@@ -111,10 +111,15 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
         GVGDROPDOWN: gvgdropdown,
         GVGBUTTON: gvgbutton }`
 	comp.Watch = `{
-        datastring: function(){
-            console.log("Dropdown changed");
-            this.$root.saveData();
-            this.$root.callAction(this.element.id);
+        datastring: function(val, oldVal){
+            if (this.element.watch===true){
+                //console.log("-------------------");
+                //console.log("val: "+val);
+                //console.log("oldVal: "+oldVal);
+                //console.log(this.element.id);
+                this.$root.saveData();
+                this.$root.callAction(this.element.id);
+            }
         }}`
 	comp.Computed = `{
         datastring: function(){

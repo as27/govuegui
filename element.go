@@ -7,10 +7,17 @@ type Element struct {
 	Key       string `json:"-"`
 	DataKey   string `json:"id"`
 	Label     string `json:"label"`
+	Watch     bool   `json:"watch"`
 	gui       *Gui
 	box       *Box
-	InputType ElementType `json:"type"`
-	Options   []*Option   `json:"options"`
+	InputType ElementType        `json:"type"`
+	Options   map[string]*Option `json:"options"`
+}
+
+func NewElement() *Element {
+	return &Element{
+		Options: make(map[string]*Option),
+	}
 }
 
 // ID returns the id of the element
@@ -23,16 +30,12 @@ func (e *Element) SetLabel(l string) {
 }
 
 // Option sets the given values as option
-func (e *Element) Option(opt string, values ...string) {
-	addOption(e, opt, values...)
-}
-
-func (e *Element) getOption(opt string) *Option {
-	return getOption(opt, e.Options)
-}
-
-func (e *Element) appendOption(o *Option) {
-	e.Options = append(e.Options, o)
+func (e *Element) Option(opt string, values ...string) *Element {
+	e.Options[opt] = &Option{
+		Option: opt,
+		Values: values,
+	}
+	return e
 }
 
 func (e *Element) Set(i interface{}) error {
