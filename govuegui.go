@@ -2,11 +2,11 @@
 // http server inside the browser. There are three different elements
 // for building the gui. Every level gets a identifier as a string.
 //
-// First level is the Form. Every Form has one submit button.
+// First level is the Form. Every Form has one submit button. A form
+// can have boxes. It depends on the implementation how the boxes are
+// rendered.
 //
-// Inside a form every element is grouped into a Box. Each Form can
-// hold as many Boxes as wanted.
-//
+// Inside of a box the fields are defined.
 //
 // The api let's you define everything on a very simple way:
 //   Form("abc").Box("cde").Input("name").Value("myvalue")
@@ -15,7 +15,12 @@
 //   Form("abc").Box("cde").Select("name2").Option("val1", "Value1")
 //   Form("abc").Box("cde").Select("name2").Option("val2", "Value2")
 //   Form("abc").Box("cde").Select("name2").Option("val3", "Value3")
-//   Form("abc").Box("cde").Each(func(){})
+//   Form("abc").Box("cde").Button("Click me").Action(func(gui *govuegui.Gui){
+//	    // do something when the Button is clicked
+//     })
+//
+// The gui will be show up inside the browser of the user as a webapp. The
+// app uses vuejs with a websocket connection.
 package govuegui
 
 // ElementType defines the
@@ -40,7 +45,7 @@ type Option struct {
 	Values []string
 }
 
-// Form wrapps one ore more Boxes
+// Form is the first level of grouping everything.
 type Form struct {
 	Key     string             `json:"id"`
 	Options map[string]*Option `json:"options"`
@@ -83,10 +88,3 @@ func (f *Form) Box(id string) *Box {
 	}
 	return box
 }
-
-/*type Button struct {
-}
-
-func (b *Button) Action(f func()) {
-
-}*/

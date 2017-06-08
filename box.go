@@ -24,6 +24,7 @@ func (b *Box) Option(opt string, values ...string) *Box {
 	return b
 }
 
+// Clear removes all elements from the box.
 func (b *Box) Clear() {
 	for _, el := range b.Elements {
 		// Remove values from storage
@@ -33,6 +34,7 @@ func (b *Box) Clear() {
 	b.Elements = []*Element{}
 }
 
+// Element adds a element of ElementType to the box.
 func (b *Box) Element(id string, inputType ElementType) *Element {
 	var el *Element
 	for _, e := range b.Elements {

@@ -133,12 +133,16 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Marshal wraps the json marshal method.
 func (g *Gui) Marshal() ([]byte, error) {
 	return json.MarshalIndent(g, "", "  ")
 }
 
-// Update sends the values to the websocket. If a dataKey is specified
-// just the data to the key is updated.
+// Update sends the values of the gui to the websocket. The dataKeys are
+// defining, which field are going to be updated. It is also possible to
+// call that function without arguments, then everything will be updated.
+// The update of all fields has to be used carefully, because that update
+// overwrites also user inputs, which are not submited.
 func (g *Gui) Update(dataKeys ...string) error {
 	// Clear update data at the beginning to ensure that is no data from
 	// the last update call.
