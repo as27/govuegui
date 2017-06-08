@@ -1,83 +1,18 @@
 package govuegui
 
 import (
-	"fmt"
-	"net/http"
-
-	"bytes"
-
 	"github.com/as27/govuegui/vuetemplate"
 )
 
-func vueappHandler(w http.ResponseWriter, r *http.Request) {
-	serverVar := "localhost" + ServerPort
-	vuetemplate.NewJSElement(vuetemplate.CONSTANT, "PathPrefix", PathPrefix).WriteTo(w)
-	vuetemplate.NewJSElement(vuetemplate.CONSTANT, "Server", serverVar).WriteTo(w)
-	comp := vuetemplate.NewComponent("gvginput")
-	comp.Template = `<input class="input" type="text" v-model="data.Data.data[element.id]">`
+func vuegvgdefaultelement(name, template string) *vuetemplate.Component {
+	comp := vuetemplate.NewComponent(name)
+	comp.Template = template
 	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvgtextarea")
-	comp.Template = `<textarea class="textarea" v-model="data.Data.data[element.id]"></textarea>`
-	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvgtext")
-	comp.Template = `<div class="text" v-html="data.Data.data[element.id]"></div>`
-	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvgtable")
-	comp.Template = `<div class="text">
-    <table class="table is-narrow">
-    <thead>
-    <tr><th v-for="cell in data.Data.data[element.id][0]">{{cell}}</th></tr>
-    </thead>
-    <tr v-for="(row,index) in data.Data.data[element.id]" v-if="index > 0">
-    <td v-for="cell in row">{{cell}}</td>
-    </tr>
-    </table>
-    </div>`
-	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvgdropdown")
-	comp.Template = `<div class="field">
-    <p class="control">
-    <span class="select">
-    <select v-model="data.Data.data[element.id]">
-    <option v-for="oitem in element.options" v-bind:value="oitem.Option">{{oitem.Values[0]}}</option>
-    </select></span>
-    </p>
-    </div>`
-	/*comp.Computed = `{
-	    datastring: function(){
-	        return JSON.stringify(this.data.Data.data[this.element.id])
-	    }
-	}`*/
-	/*
-	   comp.Watch = `{
-	       datastring: function(){
-	           console.log("Dropdown changed");
-	           this.$root.saveData();
-	           this.$root.callAction(this.element.id);
-	       }}`
-	*/
-	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvglist")
-	comp.Template = `<div class="text">
-   <ul>
-   <li v-for="litem in data.Data.data[element.id]">{{litem}}</li>
-   </ul> 
-    </div>`
-	comp.Props = "['data', 'element']"
-	comp.WriteTo(w)
-
-	comp = vuetemplate.NewComponent("gvgbutton")
-	comp.Template = `<div><br><button class="button is-primary" @click="callAction">{{element.label}}</button><br></div>`
+	return comp
+}
+func vuegvgbutton(t GuiTemplate) *vuetemplate.Component {
+	comp := vuetemplate.NewComponent("gvgbutton")
+	comp.Template = t.GvgButton()
 	comp.Props = "['data', 'element']"
 	comp.Methods = `{
         callAction: function(){
@@ -95,12 +30,12 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             );
         }
     }`
-	comp.WriteTo(w)
+	return comp
+}
 
-	comp = vuetemplate.NewComponent("gvgelement")
-	comp.Template = `<div class="field"><label v-if="renderLabel" class="label">{{element.label}}</label>
-    <component :is=element.type :element=element :data=data v-model="data.Data.data[element.id]"></component>
-    </div>`
+func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
+	comp := vuetemplate.NewComponent("gvgelement")
+	comp.Template = t.GvgElement()
 	comp.Props = "['data', 'element']"
 	comp.Components = `{
         GVGINPUT: gvginput,
@@ -144,14 +79,12 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
     }`
-	comp.WriteTo(w)
+	return comp
+}
 
-	comp = vuetemplate.NewComponent("gvgbox")
-	comp.Template = `<div><h2 class="subtitle">{{box.id}}</h2>
-    <div class="gvgelement" v-for="element in box.elements">
-    <gvgelement :element=element :data=data></gvgelement>
-    </div>
-    </div>`
+func vuegvgbox(t GuiTemplate) *vuetemplate.Component {
+	comp := vuetemplate.NewComponent("gvgbox")
+	comp.Template = t.GvgBox()
 	comp.Props = `{
         data: Object,
         box: {
@@ -161,23 +94,13 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
     }`
-	comp.WriteTo(w)
 
+	return comp
+}
+
+func vuegvgform(t GuiTemplate) *vuetemplate.Component {
 	gvgform := vuetemplate.NewComponent("gvgform")
-	gvgform.Template = `<div>
-    <div class="tabs">
-    <ul>
-    <router-link v-for="box in form.Boxes"
-        active-class="is-active"
-        tag="li"
-        :to="{ name: 'gvgbox', params: { boxid: box.id}}">
-       <a> {{box.id}}</a>
-    </router-link>
-    </ul>
-    </div>
-    <div class="box"><gvgbox :box=myBox :data=data></gvgbox></div>
-    <button class="button is-primary" @click="saveData">Submit</button>
-    </div>`
+	gvgform.Template = t.GvgForm()
 	gvgform.Data = `{
         myForm:{id:''},
         myBox:{id:''},
@@ -235,30 +158,12 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
             }
         }
     }`
-	gvgform.WriteTo(w)
+	return gvgform
+}
 
-	comp = vuetemplate.NewComponent("gvgforms")
-	comp.Template = `<div class="columns">
-        <div class="column is-one-quarter">
-        <aside class="menu">
-        <p class="menu-label">
-            Forms
-        </p> 
-            <ul class="menu-list">
-            <li  v-for="form in data.Forms">
-                <router-link 
-                    active-class="is-active"
-                    :to="{name: 'gvgform', params: { formid: form.id}}">
-                    {{form.id}}</router-link>
-            </li>
-            </ul>
-        </aside>
-        </div>
-            <div class="column">
-            <router-view :data=data :form=forms[formid] :formid=formid></router-view>
-            </div>
-        
-        </div>`
+func vuegvgforms(t GuiTemplate) *vuetemplate.Component {
+	comp := vuetemplate.NewComponent("gvgforms")
+	comp.Template = t.GvgForms()
 	comp.Data = "{}"
 	comp.Props = `{
         data: Object,
@@ -276,13 +181,14 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
 	comp.Components = `{
         gvgform: gvgform
     }`
-	comp.WriteTo(w)
-	route := vuetemplate.NewVue()
-	route.Path = "/"
-	route.Name = "home"
-	route.Components = "{default: gvgforms}"
-	route.Props = "{default: true}"
-	route.Children = `[
+	return comp
+}
+
+var vueappstring = `/*----------------------*/
+const router = new VueRouter({routes: [{
+name: 'home', 
+props: {default: true}, 
+children: [
              {
                 path: '/:formid',
                 name: 'gvgform',
@@ -297,17 +203,13 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
                     }
                 ]
             }
-        ]`
-	routes := []vuetemplate.Vue{route}
-	router := vuetemplate.NewRouter("router", routes)
-	router.WriteTo(w)
-	ws := vuetemplate.NewJSElement(
-		vuetemplate.WEBSOCKET,
-		"socket",
-		fmt.Sprintf("ws://%s%s/data/ws", serverVar, PathPrefix),
-	)
-	ws.WriteTo(w)
-	b := bytes.NewBufferString(`socket.onmessage = function(evt){
+        ], 
+components: {default: gvgforms}, 
+path: '/'}]});
+/*----------------------*/
+var socket = new WebSocket("ws://"+Server+PathPrefix+"/data/ws");
+/*----------------------*/
+socket.onmessage = function(evt){
     var newData = JSON.parse(evt.data);
     var updateAll = true;
         for(var dataKey in newData.UpdateData.data){
@@ -317,13 +219,7 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     if (updateAll){
     app.data = newData;
     }
-};	`)
-	w.Write(b.Bytes())
-
-	app := vuetemplate.NewJSElement(
-		vuetemplate.VUEAPP,
-		"app",
-		`{
+};	const app = new Vue({
     router,
     data: {
         data: {},
@@ -355,11 +251,9 @@ func vueappHandler(w http.ResponseWriter, r *http.Request) {
     created: function () {
         this.fetchData()
     },
-}`)
-	app.WriteTo(w)
-	b = bytes.NewBufferString("app.$mount('#govuegui');")
-	w.Write(b.Bytes())
-}
+});
+/*----------------------*/
+app.$mount('#govuegui');`
 
 var htmlTemplate = `<!doctype html>
 <html>
@@ -371,7 +265,7 @@ var htmlTemplate = `<!doctype html>
     <script src="{{ .PathPrefix }}/lib/vue-router.min.js"></script>
     <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
 
-     <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/lib/bulma.css" >
+     <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/app.css" >
    <title>{{ .Title }}</title>
     </head>
     <body class="page-grid">

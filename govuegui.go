@@ -23,6 +23,8 @@
 // app uses vuejs with a websocket connection.
 package govuegui
 
+import "net/http"
+
 // ElementType defines the
 type ElementType string
 
@@ -38,6 +40,23 @@ const (
 	DROPDOWN             = "GVGDROPDOWN"
 	BUTTON               = "GVGBUTTON"
 )
+
+// GuiTemplate is an abstraction on everything which is design specific.
+// To let the design of the gui be more flexible.
+type GuiTemplate interface {
+	CssHandler(w http.ResponseWriter, r *http.Request)
+	GvgForms() string
+	GvgForm() string
+	GvgBox() string
+	GvgElement() string
+	GvgButton() string
+	GvgList() string
+	GvgDropdown() string
+	GvgTable() string
+	GvgText() string
+	GvgTextarea() string
+	GvgInput() string
+}
 
 // Option holds the one option of a element
 type Option struct {

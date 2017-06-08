@@ -1,6 +1,7 @@
 package govuegui
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -10,27 +11,34 @@ import (
 	"strings"
 
 	"github.com/as27/govuegui/storage"
+	"github.com/as27/govuegui/vuetemplate"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 )
 
 // Gui groups different forms together.
 type Gui struct {
+	PathPrefix string `json:"-"`
+	ServerPort string `json:"-"`
 	Title      string
 	Forms      []*Form
 	Data       *storage.Data
 	UpdateData *storage.Data
 	hub        *hub
+	template   GuiTemplate
 	Actions    map[string]func(*Gui) `json:"-"`
 }
 
 // NewGui returns a pointer to a new instance of a gui
-func NewGui() *Gui {
+func NewGui(t GuiTemplate) *Gui {
 	return &Gui{
+		PathPrefix: DefaultPathPrefix,
+		ServerPort: DefaultServerPort,
 		Title:      "My govuigui app",
 		hub:        newWebsocketHub(),
 		Data:       storage.New(),
 		UpdateData: storage.New(),
+		template:   t,
 		Actions:    make(map[string]func(*Gui)),
 	}
 }
@@ -61,18 +69,38 @@ func (g *Gui) Form(id string) *Form {
 func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router := mux.NewRouter()
 	//r.HandleFunc(PathPrefix+"/", rootHandler)
-	prefix := PathPrefix + "/data"
-	router.HandleFunc(PathPrefix+"/", func(w http.ResponseWriter, r *http.Request) {
+	prefix := g.PathPrefix + "/data"
+	router.HandleFunc(g.PathPrefix+"/", func(w http.ResponseWriter, r *http.Request) {
 		var templateString string
 		templateString = htmlTemplate
 		tmplMessage, err := template.New("message").Parse(templateString)
 		if err != nil {
 			log.Fatal(err)
 		}
+		// Define the variables for the template
 		data := make(map[string]string)
-		data["PathPrefix"] = PathPrefix
+		data["PathPrefix"] = g.PathPrefix
 		data["Title"] = g.Title
 		tmplMessage.Execute(w, data)
+	})
+	router.HandleFunc(g.PathPrefix+"/app.css", g.template.CssHandler)
+	router.HandleFunc(g.PathPrefix+"/app.js", func(w http.ResponseWriter, r *http.Request) {
+		serverVar := "localhost" + g.ServerPort
+		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "PathPrefix", g.PathPrefix).WriteTo(w)
+		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "Server", serverVar).WriteTo(w)
+		vuegvgdefaultelement("gvginput", g.template.GvgInput()).WriteTo(w)
+		vuegvgdefaultelement("gvgtextarea", g.template.GvgTextarea()).WriteTo(w)
+		vuegvgdefaultelement("gvgtext", g.template.GvgText()).WriteTo(w)
+		vuegvgdefaultelement("gvgtable", g.template.GvgTable()).WriteTo(w)
+		vuegvgdefaultelement("gvgdropdown", g.template.GvgDropdown()).WriteTo(w)
+		vuegvgdefaultelement("gvglist", g.template.GvgList()).WriteTo(w)
+		vuegvgbutton(g.template).WriteTo(w)
+		vuegvgelement(g.template).WriteTo(w)
+		vuegvgbox(g.template).WriteTo(w)
+		vuegvgform(g.template).WriteTo(w)
+		vuegvgforms(g.template).WriteTo(w)
+		b := bytes.NewBufferString(vueappstring)
+		w.Write(b.Bytes())
 	})
 	router.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
 		q := r.URL.Query()
@@ -96,7 +124,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				log.Println(err)
 			}
-			newG := NewGui()
+			newG := NewGui(g.template)
 			err = json.Unmarshal(rbody, newG)
 			if err != nil {
 				log.Println(err)
