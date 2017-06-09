@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	gui := govuegui.NewGui(bulma.Template{})
+	gui := govuegui.NewGui(bulma.Template)
 	gui.Title = "Hello gui!"
 	myForm := gui.Form("myForm")
 	myBox1 := myForm.Box("Box 1")

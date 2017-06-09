@@ -4,6 +4,22 @@ import (
 	"github.com/as27/govuegui/vuetemplate"
 )
 
+type VueComponent struct {
+	Name        string
+	ElementType ElementType
+	CompFunc    func(GuiTemplate) *vuetemplate.Component
+}
+
+var VueComponents = []VueComponent{
+	{"gvginput", INPUT, nil},
+	{"gvgtextarea", TEXTAREA, nil},
+	{"gvgtext", TEXT, nil},
+	{"gvgtable", TABLE, nil},
+	{"gvgdropdown", DROPDOWN, nil},
+	{"gvglist", LIST, nil},
+	{"gvgbutton", BUTTON, vuegvgbutton},
+}
+
 func vuegvgdefaultelement(name, template string) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent(name)
 	comp.Template = template
@@ -12,7 +28,7 @@ func vuegvgdefaultelement(name, template string) *vuetemplate.Component {
 }
 func vuegvgbutton(t GuiTemplate) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent("gvgbutton")
-	comp.Template = t.GvgButton()
+	comp.Template = t.GvgButton
 	comp.Props = "['data', 'element']"
 	comp.Methods = `{
         callAction: function(){
@@ -35,7 +51,7 @@ func vuegvgbutton(t GuiTemplate) *vuetemplate.Component {
 
 func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent("gvgelement")
-	comp.Template = t.GvgElement()
+	comp.Template = t.GvgElement
 	comp.Props = "['data', 'element']"
 	comp.Components = `{
         GVGINPUT: gvginput,
@@ -84,7 +100,7 @@ func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
 
 func vuegvgbox(t GuiTemplate) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent("gvgbox")
-	comp.Template = t.GvgBox()
+	comp.Template = t.GvgBox
 	comp.Props = `{
         data: Object,
         box: {
@@ -100,7 +116,7 @@ func vuegvgbox(t GuiTemplate) *vuetemplate.Component {
 
 func vuegvgform(t GuiTemplate) *vuetemplate.Component {
 	gvgform := vuetemplate.NewComponent("gvgform")
-	gvgform.Template = t.GvgForm()
+	gvgform.Template = t.GvgForm
 	gvgform.Data = `{
         myForm:{id:''},
         myBox:{id:''},
@@ -163,7 +179,7 @@ func vuegvgform(t GuiTemplate) *vuetemplate.Component {
 
 func vuegvgforms(t GuiTemplate) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent("gvgforms")
-	comp.Template = t.GvgForms()
+	comp.Template = t.GvgForms
 	comp.Data = "{}"
 	comp.Props = `{
         data: Object,

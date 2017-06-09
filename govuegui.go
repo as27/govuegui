@@ -23,7 +23,10 @@
 // app uses vuejs with a websocket connection.
 package govuegui
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 // ElementType defines the
 type ElementType string
@@ -33,7 +36,6 @@ type ElementType string
 const (
 	INPUT    ElementType = "GVGINPUT"
 	TEXTAREA             = "GVGTEXTAREA"
-	SELECT               = "GVGSELECT"
 	TEXT                 = "GVGTEXT"
 	TABLE                = "GVGTABLE"
 	LIST                 = "GVGLIST"
@@ -43,19 +45,40 @@ const (
 
 // GuiTemplate is an abstraction on everything which is design specific.
 // To let the design of the gui be more flexible.
-type GuiTemplate interface {
-	CssHandler(w http.ResponseWriter, r *http.Request)
-	GvgForms() string
-	GvgForm() string
-	GvgBox() string
-	GvgElement() string
-	GvgButton() string
-	GvgList() string
-	GvgDropdown() string
-	GvgTable() string
-	GvgText() string
-	GvgTextarea() string
-	GvgInput() string
+type GuiTemplate struct {
+	CSSHandler  func(w http.ResponseWriter, r *http.Request)
+	GvgForms    string
+	GvgForm     string
+	GvgBox      string
+	GvgElement  string
+	GvgButton   string
+	GvgList     string
+	GvgDropdown string
+	GvgTable    string
+	GvgText     string
+	GvgTextarea string
+	GvgInput    string
+}
+
+func getTemplateFromElementType(etype ElementType, t GuiTemplate) (string, error) {
+	switch etype {
+	default:
+		return "", fmt.Errorf("ElementType %s not found", etype)
+	case INPUT:
+		return t.GvgInput, nil
+	case TEXTAREA:
+		return t.GvgTextarea, nil
+	case TEXT:
+		return t.GvgText, nil
+	case TABLE:
+		return t.GvgTable, nil
+	case LIST:
+		return t.GvgList, nil
+	case DROPDOWN:
+		return t.GvgDropdown, nil
+	case BUTTON:
+		return t.GvgButton, nil
+	}
 }
 
 // Option holds the one option of a element

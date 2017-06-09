@@ -83,18 +83,31 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		data["Title"] = g.Title
 		tmplMessage.Execute(w, data)
 	})
-	router.HandleFunc(g.PathPrefix+"/app.css", g.template.CssHandler)
+	router.HandleFunc(g.PathPrefix+"/app.css", g.template.CSSHandler)
 	router.HandleFunc(g.PathPrefix+"/app.js", func(w http.ResponseWriter, r *http.Request) {
 		serverVar := "localhost" + g.ServerPort
 		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "PathPrefix", g.PathPrefix).WriteTo(w)
 		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "Server", serverVar).WriteTo(w)
-		vuegvgdefaultelement("gvginput", g.template.GvgInput()).WriteTo(w)
-		vuegvgdefaultelement("gvgtextarea", g.template.GvgTextarea()).WriteTo(w)
-		vuegvgdefaultelement("gvgtext", g.template.GvgText()).WriteTo(w)
-		vuegvgdefaultelement("gvgtable", g.template.GvgTable()).WriteTo(w)
-		vuegvgdefaultelement("gvgdropdown", g.template.GvgDropdown()).WriteTo(w)
-		vuegvgdefaultelement("gvglist", g.template.GvgList()).WriteTo(w)
-		vuegvgbutton(g.template).WriteTo(w)
+		for _, vueComp := range VueComponents {
+			var comp *vuetemplate.Component
+			if vueComp.CompFunc != nil {
+				comp = vueComp.CompFunc(g.template)
+			} else {
+				tString, err := getTemplateFromElementType(vueComp.ElementType, g.template)
+				if err != nil {
+					panic(err)
+				}
+				comp = vuegvgdefaultelement(vueComp.Name, tString)
+			}
+			comp.WriteTo(w)
+		}
+		/*vuegvgdefaultelement("gvginput", g.template.GvgInput).WriteTo(w)
+		vuegvgdefaultelement("gvgtextarea", g.template.GvgTextarea).WriteTo(w)
+		vuegvgdefaultelement("gvgtext", g.template.GvgText).WriteTo(w)
+		vuegvgdefaultelement("gvgtable", g.template.GvgTable).WriteTo(w)
+		vuegvgdefaultelement("gvgdropdown", g.template.GvgDropdown).WriteTo(w)
+		vuegvgdefaultelement("gvglist", g.template.GvgList).WriteTo(w)
+		vuegvgbutton(g.template).WriteTo(w)*/
 		vuegvgelement(g.template).WriteTo(w)
 		vuegvgbox(g.template).WriteTo(w)
 		vuegvgform(g.template).WriteTo(w)
