@@ -6,11 +6,11 @@ import (
 	"time"
 
 	"github.com/as27/govuegui"
-	"github.com/as27/govuegui/gui/bulma"
+	"github.com/as27/govuegui/gui/photon"
 )
 
 func main() {
-	gui := govuegui.NewGui(bulma.Template)
+	gui := govuegui.NewGui(photon.Template)
 	gui.Title = "Hello gui!"
 	myForm := gui.Form("myForm")
 	myBox1 := myForm.Box("Box 1")

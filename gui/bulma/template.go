@@ -7,6 +7,30 @@ import (
 
 var Template = govuegui.GuiTemplate{
 	CSSHandler: bulma.Handler,
+	Body: `<body class="page-grid">
+        <div id="govuegui" class="container">
+    <div class="container">
+   <div class=""><h1 class="title is-1">{{appTitle}}</h1></div> 
+    </div>
+            <router-view :data=data :forms=forms ></router-view>
+             
+        </div>
+    <section class="section">
+        <footer class="footer">
+  <div class="container">
+   <div class="content has-text-centered">
+      <p>
+        <strong>govuigui</strong> 
+        by <a href="https://as27.github.io/" target="_blank">Andreas Schr&ouml;pfer</a>
+      </p>
+      <p><a href="https://github.com/as27/govuegui" target="_blank">govuigui github page</a></p>
+    </div>
+  </div>
+</footer>
+    </section>
+       
+    </body>
+`,
 	GvgForms: `<div class="columns">
         <div class="column is-one-quarter">
         <aside class="menu">

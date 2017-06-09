@@ -47,6 +47,7 @@ const (
 // To let the design of the gui be more flexible.
 type GuiTemplate struct {
 	CSSHandler  func(w http.ResponseWriter, r *http.Request)
+	Body        string
 	GvgForms    string
 	GvgForm     string
 	GvgBox      string

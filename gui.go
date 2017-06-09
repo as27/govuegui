@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
+	"text/template"
 
 	"github.com/as27/govuegui/storage"
 	"github.com/as27/govuegui/vuetemplate"
@@ -81,6 +81,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]string)
 		data["PathPrefix"] = g.PathPrefix
 		data["Title"] = g.Title
+		data["Body"] = g.template.Body
 		tmplMessage.Execute(w, data)
 	})
 	router.HandleFunc(g.PathPrefix+"/app.css", g.template.CSSHandler)
@@ -88,6 +89,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		serverVar := "localhost" + g.ServerPort
 		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "PathPrefix", g.PathPrefix).WriteTo(w)
 		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "Server", serverVar).WriteTo(w)
+		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "appTitle", g.Title).WriteTo(w)
 		for _, vueComp := range VueComponents {
 			var comp *vuetemplate.Component
 			if vueComp.CompFunc != nil {

@@ -238,6 +238,7 @@ socket.onmessage = function(evt){
 };	const app = new Vue({
     router,
     data: {
+        appTitle: appTitle,
         data: {},
         forms: {}
     },
@@ -284,27 +285,6 @@ var htmlTemplate = `<!doctype html>
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/app.css" >
    <title>{{ .Title }}</title>
     </head>
-    <body class="page-grid">
-    <div class="container">
-   <div class=""><h1 class="title is-1">{{.Title}}</h1></div> 
-    </div>
-        <div id="govuegui" class="container">
-            <router-view :data=data :forms=forms ></router-view>
-             
-        </div>
-    <section class="section">
-        <footer class="footer">
-  <div class="container">
-   <div class="content has-text-centered">
-      <p>
-        <strong>govuigui</strong> 
-        by <a href="https://as27.github.io/" target="_blank">Andreas Schr&ouml;pfer</a>
-      </p>
-      <p><a href="https://github.com/as27/govuegui" target="_blank">govuigui github page</a></p>
-    </div>
-  </div>
-</footer>
-    </section>
-        <script src="{{ .PathPrefix }}/app.js"></script>
-    </body>
-</html>`
+    {{ .Body }} 
+    <script src="{{ .PathPrefix }}/app.js"></script>
+   </html>`
