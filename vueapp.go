@@ -283,6 +283,7 @@ var htmlTemplate = `<!doctype html>
     <script src="{{ .PathPrefix }}/lib/vue-resource.min.js"></script>
 
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/app.css" >
+     <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/custom.css" >
    <title>{{ .Title }}</title>
     </head>
     {{ .Body }} 

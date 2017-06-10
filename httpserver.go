@@ -35,6 +35,7 @@ func NewRouter(g *Gui) *mux.Router {
 	r.HandleFunc(g.PathPrefix+"/lib/vue-router.min.js", vueroutermin.Handler)
 	r.HandleFunc(g.PathPrefix+"/lib/vue-resource.min.js", vueresourcemin.Handler)
 	r.Handle(g.PathPrefix+"/app.css", g)
+	r.Handle(g.PathPrefix+"/custom.css", g)
 	r.Handle(g.PathPrefix+"/app.js", g)
 	return r
 }

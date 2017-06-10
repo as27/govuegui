@@ -7,6 +7,10 @@ import (
 
 var Template = govuegui.GuiTemplate{
 	CSSHandler: photon.Handler,
+	CustomCSS: `#govuegui{
+        max-width:1200px;
+        margin: auto;
+        }`,
 	Body: `<body> 
         <div id="govuegui" class="window">
 		<header class="toolbar toolbar-header">
@@ -54,7 +58,7 @@ var Template = govuegui.GuiTemplate{
     <button class="btn btn-large btn-primary" @click="saveData">Submit</button>
     </div>`,
 
-	GvgBox: `<form>
+	GvgBox: `<form class="padded-more">
     <h2>{{box.id}}</h2>
             <gvgelement 
                 v-for="element in box.elements"

@@ -85,6 +85,11 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		tmplMessage.Execute(w, data)
 	})
 	router.HandleFunc(g.PathPrefix+"/app.css", g.template.CSSHandler)
+	router.HandleFunc(g.PathPrefix+"/custom.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Content-Type", "text/css")
+		b := bytes.NewBufferString(g.template.CustomCSS)
+		w.Write(b.Bytes())
+	})
 	router.HandleFunc(g.PathPrefix+"/app.js", func(w http.ResponseWriter, r *http.Request) {
 		serverVar := "localhost" + g.ServerPort
 		vuetemplate.NewJSElement(vuetemplate.CONSTANT, "PathPrefix", g.PathPrefix).WriteTo(w)
