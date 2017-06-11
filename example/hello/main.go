@@ -59,7 +59,7 @@ func main() {
 		txt = txt + "Noch eine Zeile<br>"
 		gui.Update()
 	})
-
+	gui.Form("Test").Box("Test").Text("Testtxt").Set("")
 	log.Fatal(govuegui.Serve(gui))
 }
 

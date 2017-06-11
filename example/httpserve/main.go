@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/as27/govuegui"
+	"github.com/as27/govuegui/gui/photon"
 )
 
 var logrHead = [][]string{
@@ -14,7 +15,7 @@ var logrHead = [][]string{
 
 var logr = logrHead
 
-var gui = govuegui.NewGui()
+var gui = govuegui.NewGui(photon.Template)
 
 func myl(gui *govuegui.Gui, s ...interface{}) {
 	ts := time.Now().Format(time.StampMilli)
@@ -86,7 +87,9 @@ func main() {
 
 func counter(g *govuegui.Gui) {
 	c := 1
-	g.Form("Counter").Box("Numbers").Input("NCounter").Set(&c)
+	ncounter := g.Form("Counter").Box("Numbers").Input("NCounter")
+	ncounter.Watch = false
+	ncounter.Set(&c)
 	quit := make(chan bool)
 	spb := g.Form("Counter").Box("Numbers").Button("Start/Pause")
 	spb.SetLabel("Pause")

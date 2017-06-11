@@ -101,7 +101,7 @@ var Template = govuegui.GuiTemplate{
     </div>`,
 
 	GvgTable: `<div class="text">
-    <table class="table is-narrow">
+    <table class="table-striped">
     <thead>
     <tr><th v-for="cell in data.Data.data[element.id][0]">{{cell}}</th></tr>
     </thead>
