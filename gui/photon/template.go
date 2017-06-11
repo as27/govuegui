@@ -48,39 +48,30 @@ var Template = govuegui.GuiTemplate{
 `,
 	GvgForms: `
     <div class="window-content">
-    <div class="pane-group">
-      <div class="pane-sm sidebar">
-        <nav class="nav-group">
-            <h5 class="nav-group-title">Forms</h5>
-            <router-link
-                v-for="form in data.Forms"
-                active-class="active"
-                class="nav-group-item"
-                :to="{name: 'gvgform', params: { formid: form.id}}">
-                <span class="icon icon-home"></span>
-                {{form.id}}</router-link>
-        </nav>
-        
-      </div>
-      <div class="pane">
             <router-view :data=data :form=forms[formid] :formid=formid></router-view>
-      </div>
-    </div>
-  </div>
+     </div>
   `,
 
-	GvgForm: `<div><div class="tab-group">
-    <router-link v-for="box in form.Boxes"
-        active-class="active"
-        class="tab-item"
-        tag="div"
-        :to="{ name: 'gvgbox', params: { boxid: box.id}}">
-        {{box.id}}
-    </router-link>
-</div>
-    <gvgbox :box=myBox :data=data></gvgbox>
-    <button class="btn btn-large btn-primary" @click="saveData">Submit</button>
-    </div>`,
+	GvgForm: `
+     <div class="pane-group">
+      <div class="pane-sm sidebar">
+        <nav class="nav-group">
+            <h5 class="nav-group-title">Boxes</h5>
+            <router-link
+                v-for="box in form.Boxes"
+                active-class="active"
+                class="nav-group-item"
+                :to="{ name: 'gvgbox', params: { boxid: box.id}}">
+                <span class="icon icon-home"></span>
+                {{box.id}}</router-link>
+        </nav>
+      </div>
+      <div class="pane">
+        <gvgbox :box=myBox :data=data></gvgbox>
+        <button class="btn btn-large btn-primary" @click="saveData">Submit</button>
+      </div>
+    </div>
+    `,
 
 	GvgBox: `<form class="padded-more">
     <h2>{{box.id}}</h2>
