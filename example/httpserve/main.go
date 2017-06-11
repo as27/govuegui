@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/as27/govuegui"
-	"github.com/as27/govuegui/gui/photon"
+	"github.com/as27/govuegui/gui/bulma"
 )
 
 var logrHead = [][]string{
@@ -15,7 +15,7 @@ var logrHead = [][]string{
 
 var logr = logrHead
 
-var gui = govuegui.NewGui(photon.Template)
+var gui = govuegui.NewGui(bulma.Template)
 
 func myl(gui *govuegui.Gui, s ...interface{}) {
 	ts := time.Now().Format(time.StampMilli)

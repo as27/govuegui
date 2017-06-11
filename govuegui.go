@@ -49,6 +49,7 @@ type GuiTemplate struct {
 	CSSHandler  func(w http.ResponseWriter, r *http.Request)
 	CustomCSS   string
 	Files       map[string]func(w http.ResponseWriter, r *http.Request)
+	HeadAdd     string
 	Body        string
 	GvgForms    string
 	GvgForm     string

@@ -284,6 +284,7 @@ var htmlTemplate = `<!doctype html>
 
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/app.css" >
      <link rel="stylesheet" type="text/css" href="{{ .PathPrefix }}/custom.css" >
+     {{ .HeadAdd }}
    <title>{{ .Title }}</title>
     </head>
     {{ .Body }} 

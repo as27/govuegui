@@ -30,6 +30,7 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		data := make(map[string]string)
 		data["PathPrefix"] = g.PathPrefix
 		data["Title"] = g.Title
+		data["HeadAdd"] = g.template.HeadAdd
 		data["Body"] = g.template.Body
 		tmplMessage.Execute(w, data)
 	})
@@ -37,7 +38,6 @@ func (g *Gui) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	router.HandleFunc(g.PathPrefix+"/files/{filename}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		filename := vars["filename"]
-		fmt.Println("--->", filename)
 		fileHandler, ok := g.template.Files[filename]
 		if !ok {
 			http.NotFound(w, r)

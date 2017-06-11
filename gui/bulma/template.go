@@ -1,12 +1,21 @@
 package bulma
 
 import (
+	"net/http"
+
 	"github.com/as27/golib/css/bulma"
 	"github.com/as27/govuegui"
+	"github.com/as27/govuegui/gui/bulma/src/pkg/fontawesomecss"
+	"github.com/as27/govuegui/gui/bulma/src/pkg/fontawesomewoff"
 )
 
 var Template = govuegui.GuiTemplate{
 	CSSHandler: bulma.Handler,
+	Files: map[string]func(w http.ResponseWriter, r *http.Request){
+		"font-awesome.css":         fontawesomecss.Handler,
+		"fontawesome-webfont.woff": fontawesomewoff.Handler,
+	},
+	HeadAdd: `<link rel="stylesheet" href="files/font-awesome.css">`,
 	Body: `<body class="page-grid">
         <div id="govuegui" class="container">
     <div class="container">
