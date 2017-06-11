@@ -1,21 +1,41 @@
 package photon
 
 import (
-	"github.com/as27/golib/css/photon"
+	"net/http"
+
 	"github.com/as27/govuegui"
+	"github.com/as27/govuegui/gui/photon/src/pkg/photoncss"
+	"github.com/as27/govuegui/gui/photon/src/pkg/photonwoff"
 )
 
 var Template = govuegui.GuiTemplate{
-	CSSHandler: photon.Handler,
+	CSSHandler: photoncss.Handler,
 	CustomCSS: `#govuegui{
         max-width:1200px;
         margin: auto;
-        }`,
+    }`,
+	Files: map[string]func(w http.ResponseWriter, r *http.Request){
+		"photon-entypo.woff": photonwoff.Handler,
+	},
 	Body: `<body> 
         <div id="govuegui" class="window">
-		<header class="toolbar toolbar-header">
+	    <header class="toolbar toolbar-header">
 		<h1 class="title">{{appTitle}}</h1>
-		</header>
+
+        <div class="toolbar-actions">
+            <div class="btn-group">
+                <router-link
+                    v-for="form in data.Forms"
+                    active-class="active"
+                    class="btn btn-default"
+                    tag="button"
+                    :to="{name: 'gvgform', params: { formid: form.id}}">
+                    <span class="icon icon-menu icon-text"></span>
+                    {{form.id}}</router-link>
+            </div>
+        </div>
+
+		</header>	
             <router-view :data=data :forms=forms ></router-view>
         <footer class="toolbar toolbar-footer">
 		<h1 class="title">
@@ -26,17 +46,21 @@ var Template = govuegui.GuiTemplate{
         </div>
     </body>
 `,
-	GvgForms: `<div class="window-content">
+	GvgForms: `
+    <div class="window-content">
     <div class="pane-group">
       <div class="pane-sm sidebar">
-      <nav class="nav-group">
-        <router-link
-            v-for="form in data.Forms"
-            active-class="active"
-            class="nav-group-item"
-            :to="{name: 'gvgform', params: { formid: form.id}}">
-            {{form.id}}</router-link>
+        <nav class="nav-group">
+            <h5 class="nav-group-title">Forms</h5>
+            <router-link
+                v-for="form in data.Forms"
+                active-class="active"
+                class="nav-group-item"
+                :to="{name: 'gvgform', params: { formid: form.id}}">
+                <span class="icon icon-home"></span>
+                {{form.id}}</router-link>
         </nav>
+        
       </div>
       <div class="pane">
             <router-view :data=data :form=forms[formid] :formid=formid></router-view>

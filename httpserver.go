@@ -37,6 +37,8 @@ func NewRouter(g *Gui) *mux.Router {
 	r.Handle(g.PathPrefix+"/app.css", g)
 	r.Handle(g.PathPrefix+"/custom.css", g)
 	r.Handle(g.PathPrefix+"/app.js", g)
+	// Allow the template to add files
+	r.Handle(g.PathPrefix+"/files/{filename}", g)
 	return r
 }
 
