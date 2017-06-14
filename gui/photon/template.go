@@ -74,7 +74,6 @@ var Template = govuegui.GuiTemplate{
     `,
 
 	GvgBox: `<form class="padded-more">
-    <h2>{{box.id}}</h2>
             <gvgelement 
                 v-for="element in box.elements"
                 :element=element 

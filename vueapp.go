@@ -52,6 +52,7 @@ func vuegvgbutton(t GuiTemplate) *vuetemplate.Component {
 func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
 	comp := vuetemplate.NewComponent("gvgelement")
 	comp.Template = t.GvgElement
+	comp.Data = `{updateRuns: false}`
 	comp.Props = "['data', 'element']"
 	comp.Components = `{
         GVGINPUT: gvginput,
@@ -63,7 +64,7 @@ func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
         GVGBUTTON: gvgbutton }`
 	comp.Watch = `{
         datastring: function(val, oldVal){
-            if (this.element.watch===true){
+            if (this.updateRuns===false && this.element.watch===true){
                 //console.log("-------------------");
                 //console.log("val: "+val);
                 //console.log("oldVal: "+oldVal);
@@ -82,6 +83,16 @@ func vuegvgelement(t GuiTemplate) *vuetemplate.Component {
             }
             return false;
         } }`
+	comp.BeforeUpdate = `function(){
+        this.updateRuns = true;
+    }`
+	comp.Updated = `function(){
+        this.updateRuns = false;
+    }`
+	comp.BeforeMount = `function(){
+        this.updateRuns = true;
+        console.log("mounted called");
+    }`
 	comp.Props = `{
         data: Object,
         element: {

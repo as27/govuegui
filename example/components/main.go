@@ -39,8 +39,15 @@ func main() {
 		setText(preview, inText, inTextArea)
 	})
 	outputElements := gui.Form("Elements").Box("Output")
-	outputElements.Text("Input Text")
-	outputElements.Text("Input Textarea")
+	outputElements.Text("HTML").Set("Some <b>HTML</b> comes <br>here.")
+	myList := []string{"Fist entry", "Second list item", "more", "another item"}
+	outputElements.List("A simple list").Set(myList)
+	myTable := [][]string{
+		{"Header1", "Header2", "Header3"},
+		{"1-1", "1-2", "1-3"},
+		{"2-1", "2-2", "2-3"},
+	}
+	outputElements.Table("A simple Table").Set(myTable)
 	govuegui.Serve(gui)
 }
 
