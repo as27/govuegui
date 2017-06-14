@@ -6,7 +6,7 @@ import (
 )
 
 func TestElements(t *testing.T) {
-	gui := NewGui()
+	gui := NewGui(GuiTemplate{})
 	box := gui.Form("myForm").Box("testbox")
 	inputElement := box.Input("inputid")
 	if inputElement.InputType != INPUT {
@@ -16,7 +16,7 @@ func TestElements(t *testing.T) {
 	inputElement.Option("class", "form")
 	inputElement.Option("title", "myElement")
 	inputElement.Option("class", "active", "form")
-	o := inputElement.getOption("class")
+	o := inputElement.Options["class"]
 	if o == nil {
 		t.Fatal("Option `class` not found!")
 	}

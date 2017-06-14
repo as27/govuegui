@@ -59,7 +59,7 @@ func TestJSElement(t *testing.T) {
 				"app",
 				"{}",
 			},
-			Expect: `const app = Vue({});`,
+			Expect: `const app = new Vue({});`,
 		},
 		{
 			Got: JSElement{

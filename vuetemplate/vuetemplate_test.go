@@ -15,7 +15,7 @@ func TestCompontent(t *testing.T) {
 	c.WriteTo(b)
 	expect := `const test = Vue.component('test', {
 		template: ` + "`" + "<div>abc</div>`" + `});`
-	assert.Equal(t, clearString(expect), clearString(b.String()))
+	assert.Contains(t, clearString(b.String()), clearString(expect))
 }
 
 func TestRouter(t *testing.T) {
@@ -25,14 +25,14 @@ func TestRouter(t *testing.T) {
 	r := NewRouter("router", routes)
 	b := &bytes.Buffer{}
 	r.WriteTo(b)
-	expect := `const router = VueRouter({
-		router: [
+	expect := `const router = new VueRouter({
+		routes: [
 			{
 				path: '/'
 			}
 			]
 			});`
-	assert.Equal(t, clearString(expect), clearString(b.String()))
+	assert.Contains(t, clearString(b.String()), clearString(expect))
 }
 
 func TestVue(t *testing.T) {
