@@ -59,6 +59,13 @@ func (b *Box) Element(id string, inputType ElementType) *Element {
 	return el
 }
 
+// Active activates that box in the gui
+func (b *Box) Active() *Box {
+	b.gui.Active = fmt.Sprintf("/%s/%s", b.form.Key, b.Key)
+	b.gui.Update()
+	return b
+}
+
 // Input adds a simple html input field to the box. The field is watched, so
 // every change is submited from the browser and is availiable inside
 // your go app.

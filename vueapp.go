@@ -245,6 +245,9 @@ socket.onmessage = function(evt){
         }
     if (updateAll){
     app.data = newData;
+    if (newData.Active!=""){
+        app.$router.push(newData.Active);
+    }
     }
 };	const app = new Vue({
     router,

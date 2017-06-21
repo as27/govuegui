@@ -16,6 +16,7 @@ type Gui struct {
 	Forms      []*Form
 	Data       *storage.Data
 	UpdateData *storage.Data
+	Active     string // route to the active box
 	hub        *hub
 	template   GuiTemplate
 	Actions    map[string]func(*Gui) `json:"-"`
@@ -96,7 +97,13 @@ func (g *Gui) Update(dataKeys ...string) error {
 		}
 	}
 	err := g.hub.writeJSON(g)
-	return err
+	if err != nil {
+		return err
+	}
+	// After sending the data to the hub the Active route has to be cleared
+	// that the route is not set again with the next update
+	g.Active = ""
+	return nil
 }
 
 func (g *Gui) clearUpdateData() {

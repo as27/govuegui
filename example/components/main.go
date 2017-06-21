@@ -48,6 +48,10 @@ func main() {
 		{"2-1", "2-2", "2-3"},
 	}
 	outputElements.Table("A simple Table").Set(myTable)
+	inputElements.Button("Go to Output").Action(func(gui *govuegui.Gui) {
+		outputElements.Active()
+	})
+	inputElements.Active()
 	govuegui.Serve(gui)
 }
 
